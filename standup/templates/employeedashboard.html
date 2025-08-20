@@ -1,0 +1,117 @@
+<!-- templates/lead_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tech Lead Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+    }
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #343a40;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      padding: 12px 20px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #ddd;
+      display: block;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+      color: #fff;
+      border-left: 3px solid #0d6efd;
+    }
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: #0d6efd !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4 class="text-center text-white">Lead Panel</h4>
+    <hr class="bg-light">
+    
+    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+    <a href="#">📜 Task History</a>
+    <a href="{% url 'logout_view' %}">🚪 Logout</a>
+  </div>
+
+  <!-- Page Content -->
+  <div class="content">
+    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
+      <!-- <a class="navbar-brand" href="#">Tech Lead Dashboard</a> -->
+      <!-- <span class="text-muted py-2 ">Welcome, {{ request.user.username }}</span> -->
+      <div class="container w-100 d-flex justify-content-center">
+        <a class="navbar-brand" >Tech Lead Dashboard</a>
+        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
+      </div>
+    </nav>
+    
+
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body text-center">
+              <h5 class="card-title">Add Project</h5>
+              <p class="card-text">Create and manage new projects.</p>
+              <a href="#" class="btn btn-primary btn-sm">Go</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body text-center">
+              <h5 class="card-title">Assign Project</h5>
+              <p class="card-text">Assign employees to projects.</p>
+              <a href="#" class="btn btn-success btn-sm">Go</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body text-center">
+              <h5 class="card-title">Task History</h5>
+              <p class="card-text">View daily updates from employees.</p>
+              <a href="#" class="btn btn-warning btn-sm">Go</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+      document.getElementById("logout-btn").addEventListener("click", function(e) {
+          e.preventDefault(); // prevent default link behavior
+          if (confirm("Are you sure you want to logout?")) {
+              // Redirect to Django logout view
+              window.location.href = "{% url 'logout_view' %}";
+          } 
+          // If Cancel, nothing happens and user stays on dashboard
+      });
+</script>
+</body>
+</html>
