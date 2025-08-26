@@ -1,4 +1,4 @@
-<!-- templates/lead_dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,13 +46,15 @@
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h4 class="text-center text-white">Lead Panel</h4>
+    <h4 class="text-center text-white">Tech Panel</h4>
     <hr class="bg-light">
     
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="#">📜 Task History</a>
+    <!-- <a href="{% url 'add_project' %}">➕ Add Profiel</a> -->
+    <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
+
+   
+    <a href="{% url 'employee_task_history' %}">📜 Task History</a>
     <a href="{% url 'logout_view' %}">🚪 Logout</a>
   </div>
 
@@ -62,45 +64,105 @@
       <!-- <a class="navbar-brand" href="#">Tech Lead Dashboard</a> -->
       <!-- <span class="text-muted py-2 ">Welcome, {{ request.user.username }}</span> -->
       <div class="container w-100 d-flex justify-content-center">
-        <a class="navbar-brand" >Tech Lead Dashboard</a>
+        <a class="navbar-brand" >Techteam Dashboard</a>
         <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
       </div>
     </nav>
     
+    
 
-    <div class="container">
+    <!-- <div class="container">
       <div class="row g-4">
         <div class="col-md-4">
           <div class="card shadow-sm border-0 rounded-3">
             <div class="card-body text-center">
-              <h5 class="card-title">Add Project</h5>
-              <p class="card-text">Create and manage new projects.</p>
+              <h5 class="card-title">Add Profile</h5>
+              <p class="card-text">Add your profile.</p>
               <a href="#" class="btn btn-primary btn-sm">Go</a>
             </div>
           </div>
-        </div>
+        </div> -->
         
-        <div class="col-md-4">
+        <!-- <div class="col-md-4">
           <div class="card shadow-sm border-0 rounded-3">
             <div class="card-body text-center">
-              <h5 class="card-title">Assign Project</h5>
-              <p class="card-text">Assign employees to projects.</p>
+              <h5 class="card-title">Add Updates</h5>
+              <p class="card-text">Fill your daily updates</p>
               <a href="#" class="btn btn-success btn-sm">Go</a>
             </div>
           </div>
-        </div>
+        </div> -->
         
-        <div class="col-md-4">
+        
+        <!-- <div class="col-md-4">
           <div class="card shadow-sm border-0 rounded-3">
             <div class="card-body text-center">
-              <h5 class="card-title">Task History</h5>
+              <h5 class="card-title">Updates History</h5>
               <p class="card-text">View daily updates from employees.</p>
               <a href="#" class="btn btn-warning btn-sm">Go</a>
             </div>
           </div>
         </div>
-      </div>
+        <div class="container">
+      <h3 class="mb-4">Upcoming Meetings</h3>
+      
+      {% if meetings %}
+        <div class="list-group">
+          {% for meeting in meetings %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1">{{ meeting.about }}</h5>
+                <small>
+                  Date: {{ meeting.meeting_date }} | 
+                  Time: {{ meeting.meeting_time }}
+                </small>
+              </div>
+              <span class="badge bg-primary">Upcoming</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          No upcoming meetings.
+        </div>
+      {% endif %}
     </div>
+      </div>
+    </div> -->
+    <!-- Upcoming Meetings Section -->
+<div class="container mt-5">
+  <h3 class="mb-4">Upcoming Meetings</h3>
+  
+  {% if meetings %}
+    <div class="list-group">
+      {% for meeting in meetings %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1">{{ meeting.about }}</h5>
+            <small>
+              Date: {{ meeting.meeting_date }} | 
+              Time: {{ meeting.meeting_time }}
+            </small><br>
+            {% if meeting.link %}
+              <a href="{{ meeting.link }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                Join Meeting
+              </a>
+            {% else %}
+              <span class="text-muted">No link provided</span>
+            {% endif %}
+          </div>
+          <span class="badge bg-primary">Upcoming</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      No upcoming meetings.
+    </div>
+  {% endif %}
+</div>
+
+
 
   </div>
   <script>

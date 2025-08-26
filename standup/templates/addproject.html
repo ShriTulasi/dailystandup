@@ -48,12 +48,15 @@
   <div class="sidebar">
     <h4 class="text-center text-white">Lead Panel</h4>
     <hr class="bg-light">
+    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
+    <a href="{% url 'approval_list' %}">📂 Approve List</a>
+
+    <a href="{% url 'logout_view' %}">🚪 Logout</a>
     
-    <a href="#">➕ Add Project</a>
-    <a href="#">👤 Add Profile</a>
-    <a href="#">📂 Assign Project</a>
-    <a href="#">📜 Task History</a>
-    <a href="#">🚪 Logout</a>
+   
   </div>
 
   <div class="content">

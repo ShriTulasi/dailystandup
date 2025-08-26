@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<div class="container mt-4">
+  <h2 class="mb-4">My Scheduled Meetings</h2>
+
+  {% if meetings %}
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Title</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Participants</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for meeting in meetings %}
+        <tr>
+          <td>{{ meeting.title }}</td>
+          <td>{{ meeting.date }}</td>
+          <td>{{ meeting.time }}</td>
+          <td>
+            {% for emp in meeting.participants.all %}
+              <span class="badge bg-info text-dark">{{ emp.username }}</span>
+            {% empty %}
+              <span class="text-muted">No participants</span>
+            {% endfor %}
+          </td>
+          <td>
+            {% if meeting.is_finished %}
+              <span class="badge bg-success">Finished</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Upcoming</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">You haven’t scheduled any meetings yet.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+    
+</body>
+</html>

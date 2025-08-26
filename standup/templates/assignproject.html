@@ -113,11 +113,18 @@
   <div class="sidebar">
     <h4>Lead Panel</h4>
     <hr class="bg-light">
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <!-- <a href="{% url 'add_project' %}">➕ Add Project</a>
     <a href="{% url 'add_profile' %}">👤 Add Profile</a>
     <a href="{% url 'assign_project' %}">📂 Assign Project</a>
     <a href="#">📜 Task History</a>
-    <a href="#">🚪 Logout</a>
+    <a href="#">🚪 Logout</a> -->
+    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
+    <a href="{% url 'approval_list' %}">📂 Approve List</a>
+
+    <a href="{% url 'logout_view' %}">🚪 Logout</a>
   </div>
 
   <!-- Main Content -->
@@ -137,7 +144,7 @@
         <div class="mb-3">
           <label class="form-label">Employees:</label>
           <div class="checkbox-container">
-            {% for checkbox in form.employees %}
+            {% for checkbox in form.employee %}
               <div class="form-check">
                 {{ checkbox.tag }}
                 <label class="form-check-label">{{ checkbox.choice_label }}</label>
