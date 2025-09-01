@@ -1,27 +1,70 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from .models import Project,ProjectAssignment
+from .models import Project,ProjectAssignment,Meeting
+from .models import EmpProfile
+
+# User = get_user_model()
+
+# class RegisterSerializer(serializers.ModelSerializer):
+#     password = serializers.CharField(write_only=True, required=True)
+
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email', 'password']
+
+#     def create(self, validated_data):
+        
+#         validated_data['password'] = make_password(validated_data['password'])
+#         validated_data['is_pending'] = True
+#         validated_data['is_approved'] = False
+#         validated_data['is_active'] = False 
+#         return super().create(validated_data)
+
+
+from rest_framework import serializers
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import get_user_model
 from .models import EmpProfile
 
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
+    # User fields
     password = serializers.CharField(write_only=True, required=True)
+    email = serializers.EmailField(required=True)
+
+    # Extra profile fields
+    phone = serializers.CharField(max_length=15, required=True)
+    address = serializers.CharField(required=True)
+    dob = serializers.DateField(required=False)
+    designation = serializers.CharField(max_length=100, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password',
+                  'phone', 'address', 'dob', 'designation']
 
     def create(self, validated_data):
-        
+        # Separate user data & profile data
+        profile_data = {
+            'phone': validated_data.pop('phone'),
+            'address': validated_data.pop('address'),
+            'dob': validated_data.pop('dob', None),
+            'designation': validated_data.pop('designation'),
+        }
+
+        # Create user
         validated_data['password'] = make_password(validated_data['password'])
         validated_data['is_pending'] = True
         validated_data['is_approved'] = False
-        validated_data['is_active'] = False 
-        return super().create(validated_data)
+        validated_data['is_active'] = False
+        user = User.objects.create(**validated_data)
 
+        # Create profile
+        EmpProfile.objects.create(user=user, **profile_data)
 
+        return user
 
 
 # class LoginSerializer(serializers.Serializer):
@@ -256,6 +299,86 @@ class DailyUpdatesSerializer(serializers.ModelSerializer):
 
 
 
+# User = get_user_model()
+
+# class MeetingSerializer(serializers.ModelSerializer):
+#     host = serializers.StringRelatedField(read_only=True)  # shows host username
+#     participants = serializers.SlugRelatedField(
+#         many=True,
+#         slug_field='username',
+#         queryset=User.objects.all()
+#     )
+
+#     class Meta:
+#         model = Meeting
+#         fields = ['id','host','participants','about','meeting_time','meeting_date','link','is_cancel','reason']
+            
+        
+# from rest_framework import serializers
+# from django.contrib.auth import get_user_model
+# from .models import Meeting
+
+# User = get_user_model()
+
+# class MeetingSerializer(serializers.ModelSerializer):
+#     host = serializers.StringRelatedField(read_only=True)  # shows host username
+#     participants = serializers.PrimaryKeyRelatedField(
+#         many=True,
+#         queryset=User.objects.all()
+#     )
+
+#     class Meta:
+#         model = Meeting
+#         fields = [
+#             "id",
+#             "host",
+#             "participants",
+#             "about",
+#             "meeting_time",
+#             "meeting_date",
+#             "link",
+#             "is_cancel",
+#             "reason",
+#         ]
+
+#     def create(self, validated_data):
+#         participants = validated_data.pop("participants", [])
+#         meeting = Meeting.objects.create(**validated_data)
+#         meeting.participants.set(participants)
+#         return meeting
+
+
+
+
+class MeetingSerializer(serializers.ModelSerializer):
+    host = serializers.StringRelatedField(read_only=True)  # shows host username
+    participants = serializers.SlugRelatedField(
+        many=True,
+        slug_field='username',   # accept "username" instead of ID
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = Meeting
+        fields = [
+            "id",
+            "host",
+            "participants",
+            "about",
+            "meeting_time",
+            "meeting_date",
+            "link",
+            "is_cancel",
+            "reason",
+        ]
+
+    def create(self, validated_data):
+        participants = validated_data.pop("participants", [])
+        meeting = Meeting.objects.create(**validated_data)
+        meeting.participants.set(participants)
+        return meeting
+
+
 
 
 
@@ -265,4 +388,7 @@ class DailyUpdatesSerializer(serializers.ModelSerializer):
         
 
 
-    
+class ApproveListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]   # keep it minimal

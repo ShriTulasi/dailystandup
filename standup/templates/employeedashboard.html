@@ -55,7 +55,8 @@
 
    
     <a href="{% url 'employee_task_history' %}">📜 Task History</a>
-    <a href="{% url 'logout_view' %}">🚪 Logout</a>
+    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
+   🚪 Logout</a>
   </div>
 
   <!-- Page Content -->

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Tech Lead Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -107,7 +108,18 @@
             <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
             <td class="status-approved">Approved</td>
-            <td>-</td>
+            <!-- <td><a href="{% url 'reject_user' user.id %}" class="btn btn-danger btn-sm">Reject</a><i class="fas fa-user-slash" style="color:black;"></i></td> -->
+                                <td class="text-center">
+    <a href="{% url 'reject_user' user.id %}" 
+       class="btn btn-white btn-sm rounded-circle" 
+       title="Delete User" 
+       onclick="return confirm('Are you sure you want to delete or block this user? onces user blocked he  they cant access any page'); " style= "color: brown;">
+        <i class="fas fa-trash-alt" style="color:black;"></i>
+    </a>
+</td>
+
+
+
           </tr>
           {% endfor %}
 

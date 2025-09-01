@@ -2,19 +2,53 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User,Project,EmployeeProject,Profile,ProjectAssignment,EmpProfile,DailyUpdates,Meeting
 
+# class RegisterForm(UserCreationForm):
+#     email = forms.EmailField(required=True)
+    
+
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email', 'password1', 'password2','phonenumber','dob','address','designation']
+#     def save(self, commit=True):
+#         user = super().save(commit=False)
+#         user.is_active = False   # cannot login until approved
+#         user.is_pending = True   # show in lead dashboard
+#         if commit:
+#             user.save()
+#         return user
+
+
+
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    
+
+    # Extra fields for EmpProfile
+    phone = forms.CharField(max_length=15, required=True)
+    address = forms.CharField(widget=forms.Textarea, required=True)
+    dob = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
+    designation = forms.CharField(max_length=100, required=True)
+    profile = forms.FileField(required=False)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']  # only User fields
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_active = False   # cannot login until approved
         user.is_pending = True   # show in lead dashboard
+
         if commit:
             user.save()
+            # Create the EmpProfile with extra fields
+            EmpProfile.objects.create(
+                user=user,
+                phone=self.cleaned_data['phone'],
+                address=self.cleaned_data['address'],
+                dob=self.cleaned_data['dob'],
+                designation=self.cleaned_data['designation'],
+                # profile=self.cleaned_data.get('profile'),
+            )
         return user
 
 
@@ -77,14 +111,44 @@ class AssignEmployeeForm(forms.Form):
 
 
 
-class profileform(forms.ModelForm):
+# class profileform(forms.ModelForm):
+#     username = forms.CharField(
+#         max_length=30, required=True, 
+#         widget=forms.TextInput(attrs={'class': 'form-control'})
+#     )
+    
+#     email = forms.EmailField(
+#         required=True, 
+#         widget=forms.EmailInput(attrs={'class': 'form-control'})
+#     )
+
+#     class Meta:
+#         model = Profile
+#         fields = ['username', 'email', 'phone', 'field', 'designation']
+#         widgets = {
+#             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone'}),
+#             'field': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter field'}),
+#             'designation': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter designation'}),
+#         }
+
+#     def __init__(self, *args, **kwargs):
+#         user = kwargs.pop('user', None)
+#         super().__init__(*args, **kwargs)
+#         if user:
+#             # self.fields['first_name'].initial = user.first_name
+#             # self.fields['last_name'].initial = user.last_name
+#             self.fields['email'].initial = user.email
+#             self.fields['username'].initial = user.username
+
+
+class ProfileForm(forms.ModelForm):
     username = forms.CharField(
-        max_length=30, required=True, 
+        max_length=30, required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     
     email = forms.EmailField(
-        required=True, 
+        required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
 
@@ -98,15 +162,19 @@ class profileform(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)   # take logged-in user
         super().__init__(*args, **kwargs)
+        
         if user:
-            # self.fields['first_name'].initial = user.first_name
-            # self.fields['last_name'].initial = user.last_name
-            self.fields['email'].initial = user.email
+            # prefill username and email from User model
             self.fields['username'].initial = user.username
+            self.fields['email'].initial = user.email
 
-
+            # if Profile already exists, prefill phone, field, designation
+            if hasattr(user, 'profile'):
+                self.fields['phone'].initial = user.profile.phone
+                self.fields['field'].initial = user.profile.field
+                self.fields['designation'].initial = user.profile.designation
 
 
 # class ProjectAssignmentForm(forms.ModelForm):
@@ -267,7 +335,7 @@ class MeetingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MeetingForm, self).__init__(*args, **kwargs)
         # Filter only employees (assuming 'employee' is a role in your User model)
-        self.fields['participants'].queryset = User.objects.filter(role='employee')
+        self.fields['participants'].queryset = User.objects.filter(role='employee',is_approved =True)
 
 
 
