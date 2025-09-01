@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register_view,RegisterAPI,login_view,LoginAPI,tech_dashboard,add_project,ProjectCreateAPI,add_profile,logout_view,assign_project,ProjectAssignmentAPIView,employee_dashboard,approval_list,approve_user,reject_user,ApproveUserAPI,RejectUserAPI,add_emp_profile,EmpProfileView,submit_daily_task,team_lead_task_view,employee_task_history,schedule_meeting,update_meeting,cancel_meeting,SubmitDailyTaskAPIView
+from .views import register_view,RegisterAPI,login_view,LoginAPI,tech_dashboard,add_project,ProjectCreateAPI,add_profile,logout_view,assign_project,ProjectAssignmentAPIView,employee_dashboard,approval_list,approve_user,reject_user,ApproveUserAPI,RejectUserAPI,add_emp_profile,EmpProfileView,submit_daily_task,team_lead_task_view,employee_task_history,schedule_meeting,update_meeting,cancel_meeting,SubmitDailyTaskAPIView,ScheduleMeetingAPIView,UpdateMeetingAPIView,CancelMeetingAPIView,ApprovedListsAPI,logout_api,ProjectList
 urlpatterns=[
     path('register_view/',register_view,name='register_view'),
     path('api/RegisterAPI/',RegisterAPI.as_view(),name='RegisterAPI'),
@@ -28,7 +28,15 @@ urlpatterns=[
     # path('lead_meetings_list/',lead_meetings_list,name='lead_meetings_list')
     path('update_meeting/<int:pk>/',update_meeting,name='update_meeting'),
     path('cancel_meeting/<int:pk>/',cancel_meeting,name='cancel_meeting'),
-    path('api/SubmitDailyTaskAPIView/',SubmitDailyTaskAPIView.as_view(),name='SubmitDailyTaskAPIView')
+    path('api/SubmitDailyTaskAPIView/',SubmitDailyTaskAPIView.as_view(),name='SubmitDailyTaskAPIView'),
+    # path('api/schedule_meeting_api/',schedule_meeting_api,name='schedule_meeting_api')
+    path('api/ScheduleMeetingAPIView/',ScheduleMeetingAPIView.as_view(),name='ScheduleMeetingAPIView'),
+    path('api/UpdateMeetingAPIView/<int:pk>/',UpdateMeetingAPIView.as_view(),name='UpdateMeetingAPIView'),
+    path('api/CancelMeetingAPIView/<int:pk>/',CancelMeetingAPIView.as_view(),name='CancelMeetingAPIView'),
+    path('api/ApprovedListsAPI/',ApprovedListsAPI.as_view(),name='ApprovedListsAPI'),
+    path('api/logout_api/',logout_api,name='logout_api'),
+    path('api/ProjectList/',ProjectList.as_view(),name='ProjectList')
+    
 
 
     

@@ -6,16 +6,16 @@ from django.contrib import messages
 from rest_framework import permissions
 # Create your views here.
 from django.shortcuts import render, redirect
-from .forms import RegisterForm,ProjectForm,profileform,ProjectAssignmentForm,ApproveUserForm,EmpProfileForm,DailyTaskForm,MeetingForm
+from .forms import RegisterForm,ProjectForm,ProjectAssignmentForm,ApproveUserForm,EmpProfileForm,DailyTaskForm,MeetingForm,ProfileForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer,ProjectSerializer,RejectUserSerializer,ApproveUserSerializer,EmpProfileSerializer
+from .serializers import RegisterSerializer,ProjectSerializer,RejectUserSerializer,ApproveUserSerializer,EmpProfileSerializer,MeetingSerializer
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .models import User,Profile,EmpProfile,DailyUpdates
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, get_user_model
 
 from .serializers import LoginSerializer
@@ -43,20 +43,38 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
 
+# def register_view(request):
+#     if request.method == "POST":
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(commit= False)
+#             user.is_active = False
+#             user.save()
+#             messages.success(request, "Registration successful! Wait for lead approval.")
+
+#             # login(request, user)   # optional: log in after registration
+#             return redirect("login_view")  # redirect wherever you want
+#     else:
+#         form = RegisterForm()
+#     return render(request, "register.html", {"form": form})
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit= False)
+            user = form.save(commit=False)
             user.is_active = False
+            user.is_pending = True
             user.save()
             messages.success(request, "Registration successful! Wait for lead approval.")
-
-            # login(request, user)   # optional: log in after registration
-            return redirect("login_view")  # redirect wherever you want
+            return redirect("login_view")
+        else:
+           
+            print("Form errors:", form.errors)
+            messages.error(request, "There was an error in your form. Please check and try again.")
     else:
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
+
 
 
 
@@ -176,15 +194,32 @@ def login_view(request):
 
 
 
+# class RegisterAPI(APIView):
+#     def post(self, request):
+#         serializer = RegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import RegisterSerializer
+
 class RegisterAPI(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            return Response({
+                "message": "User registered successfully. Pending approval.",
+                
+                
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 
@@ -252,7 +287,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .serializers import LoginSerializer
-
+from .models import Project
 User = get_user_model()
 
 # class LoginAPI(APIView):
@@ -439,7 +474,15 @@ class ProjectCreateAPI(APIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class ProjectList(APIView):
     
+    def get(self,request):
+        project = Project.objects.all()
+        serializer = ProjectSerializer(project,many = True)
+        return Response(serializer.data,status= status.HTTP_200_OK)
 
 
 
@@ -447,28 +490,55 @@ class ProjectCreateAPI(APIView):
 
 
 
+
+# @login_required
+# def add_profile(request):
+#     profile_obj, created = Profile.objects.get_or_create(user=request.user)
+
+#     if request.method == 'POST':
+#         form = profileform(request.POST, instance=profile_obj, user=request.user)
+#         if form.is_valid():
+#             # Update User fields
+           
+#             request.user.email = form.cleaned_data['email']
+#             request.user.username = form.cleaned_data['username']
+#             request.user.save()
+
+#             form.save()
+#             return redirect('tech_dashboard')
+#     else:
+#         form = profileform(instance=profile_obj, user=request.user)
+
+#     return render(request, 'addprofile.html', {'form': form})
 
 
 @login_required
 def add_profile(request):
+    # Get or create a Profile for the logged-in user
     profile_obj, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        form = profileform(request.POST, instance=profile_obj, user=request.user)
+        form = ProfileForm(request.POST, instance=profile_obj, user=request.user)
         if form.is_valid():
-            # Update User fields
-            # request.user.first_name = form.cleaned_data['first_name']
-            # request.user.last_name = form.cleaned_data['last_name']
-            request.user.email = form.cleaned_data['email']
+            # Update User model fields from form
             request.user.username = form.cleaned_data['username']
+            request.user.email = form.cleaned_data['email']
             request.user.save()
 
+            # Save Profile fields
             form.save()
             return redirect('tech_dashboard')
     else:
-        form = profileform(instance=profile_obj, user=request.user)
+        # Prefill form with user + profile data
+        form = ProfileForm(instance=profile_obj, user=request.user)
 
     return render(request, 'addprofile.html', {'form': form})
+
+
+
+
+
+
 
 
 
@@ -479,10 +549,24 @@ from django.shortcuts import redirect
 
 def logout_view(request):
     logout(request)
-    return redirect('login_view')  # redirect to login page
+    return redirect('login_view')  
 
 
-
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logout_api(request):
+   
+    try:
+        request.user.auth_token.delete()
+        return Response(
+            {"message": "Logged out successfully"},
+            status=status.HTTP_200_OK
+        )
+    except Exception:
+        return Response(
+            {"error": "Logout failed"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 
@@ -712,9 +796,37 @@ class RejectUserAPI(APIView):
 
 
 
+# @login_required
+# def add_emp_profile(request):
+#     # Check if profile already exists
+#     profile_instance = EmpProfile.objects.filter(user=request.user).first()
+
+#     if request.method == "POST":
+#         form = EmpProfileForm(
+#             request.POST, 
+#             request.FILES, 
+#             instance=profile_instance, 
+#             user=request.user
+#         )
+#         if form.is_valid():
+#             profile = form.save(commit=False)
+#             profile.user = request.user   # link profile to user
+#             profile.save()
+
+#             # Update User model fields
+#             request.user.username = form.cleaned_data['username']
+#             request.user.email = form.cleaned_data['email']
+#             request.user.save()
+
+#             return redirect("employee_dashboard")  # redirect anywhere you like
+#     else:
+#         form = EmpProfileForm(instance=profile_instance, user=request.user)
+
+#     return render(request, "addprofile.html", {"form": form})
+
 @login_required
 def add_emp_profile(request):
-    # Check if profile already exists
+    # Get profile if exists, else None
     profile_instance = EmpProfile.objects.filter(user=request.user).first()
 
     if request.method == "POST":
@@ -726,20 +838,20 @@ def add_emp_profile(request):
         )
         if form.is_valid():
             profile = form.save(commit=False)
-            profile.user = request.user   # link profile to user
+            profile.user = request.user   # always link profile to user
             profile.save()
 
             # Update User model fields
-            request.user.username = form.cleaned_data['username']
-            request.user.email = form.cleaned_data['email']
+            request.user.username = form.cleaned_data.get('username', request.user.username)
+            request.user.email = form.cleaned_data.get('email', request.user.email)
             request.user.save()
 
-            return redirect("employee_dashboard")  # redirect anywhere you like
+            return redirect("employee_dashboard")  # success redirect
     else:
+        # For GET: Prefill with profile_instance or user data
         form = EmpProfileForm(instance=profile_instance, user=request.user)
 
     return render(request, "addprofile.html", {"form": form})
-
 
 
 
@@ -773,19 +885,43 @@ def add_emp_profile(request):
 
 
 
-class EmpProfileView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
-    serializer_class = EmpProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class EmpProfileView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
+#     serializer_class = EmpProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self):
-        # Fetch the logged-in user's profile, or return None if not exists
-        profile = EmpProfile.objects.filter(user=self.request.user).first()
-        return profile
+#     def get_object(self):
+#         # Fetch the logged-in user's profile, or return None if not exists
+#         profile = EmpProfile.objects.filter(user=self.request.user).first()
+#         return profile
 
-    def perform_create(self, serializer):
-        # Link the profile to logged-in user
-        serializer.save(user=self.request.user)
+#     def perform_create(self, serializer):
+#         # Link the profile to logged-in user
+#         serializer.save(user=self.request.user)
 
+
+class EmpProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile, created = EmpProfile.objects.get_or_create(user=request.user)
+        serializer = EmpProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def put(self, request):
+        profile, created = EmpProfile.objects.get_or_create(user=request.user)
+        serializer = EmpProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        profile, created = EmpProfile.objects.get_or_create(user=request.user)
+        serializer = EmpProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -1069,7 +1205,7 @@ def submit_daily_task(request):
             tasks = request.POST.getlist(f'tasks_project_{project_count}[]')
             times = request.POST.getlist(f'time_taken_{project_count}[]')
             statuses = request.POST.getlist(f'status_{project_count}[]')
-            dates = request.POST.getlist(f'task_date_{project_count}[]')
+            # dates = request.POST.getlist(f'task_date_{project_count}[]')
 
             for i, task in enumerate(tasks):
                 task = task.strip()
@@ -1087,7 +1223,8 @@ def submit_daily_task(request):
                         task_description=task,
                         time_taken=time_taken,
                         status=statuses[i] if i < len(statuses) else 'pending',
-                        task_date=dates[i] if i < len(dates) else timezone.localdate()
+                        # task_date=dates[i] if i < len(dates) else timezone.localdate()
+                        task_date=timezone.localdate()  
                     )
 
             project_count += 1
@@ -1115,14 +1252,55 @@ def submit_daily_task(request):
 
 
 
+# from django.core.paginator import Paginator
+# from django.contrib.auth.decorators import login_required
+# from django.shortcuts import render
+# from .models import DailyUpdates
 
+# @login_required(login_url='login')
+# def team_lead_task_view(request):
+#     tasks = DailyUpdates.objects.select_related('user', 'project').order_by('-task_date')
+
+#     # convert time_taken to human-readable string
+#     for task in tasks:
+#         if task.time_taken:
+#             total_seconds = task.time_taken.total_seconds()
+#             hours = int(total_seconds // 3600)
+#             minutes = int((total_seconds % 3600) // 60)
+#             task.time_taken_str = f"{hours}h {minutes}m"
+#         else:
+#             task.time_taken_str = "-"
+#     paginator = Paginator(tasks,15)
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+    
+
+#     return render(request, 'lead_taskupdates.html', {'page_obj' : page_obj})
+
+
+from django.db.models import Q
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from .models import DailyUpdates
 
 @login_required(login_url='login')
 def team_lead_task_view(request):
+    query = request.GET.get('q', '')   # search query
+    status_filter = request.GET.get('status', '')  # optional status filter
+
     tasks = DailyUpdates.objects.select_related('user', 'project').order_by('-task_date')
+
+    # 🔍 Apply search
+    if query:
+        tasks = tasks.filter(
+            Q(task_description__icontains=query) |
+            Q(project__name__icontains=query) |
+            Q(user__username__icontains=query)  # search in employee name too
+        )
+
+    # ✅ Apply status filter if selected
+    if status_filter:
+        tasks = tasks.filter(status=status_filter)
 
     # convert time_taken to human-readable string
     for task in tasks:
@@ -1134,7 +1312,18 @@ def team_lead_task_view(request):
         else:
             task.time_taken_str = "-"
 
-    return render(request, 'lead_taskupdates.html', {'tasks': tasks})
+    # ✅ Pagination
+    paginator = Paginator(tasks, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'lead_taskupdates.html',
+        {'page_obj': page_obj, 'query': query, 'status_filter': status_filter}
+    )
+
+
 
 
 
@@ -1152,7 +1341,11 @@ def employee_task_history(request):
         else:
             task.time_taken_str = "-"
 
-    return render(request, 'emptaskhistory.html', {'tasks': tasks})
+    paginator = Paginator(tasks,15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'emptaskhistory.html',{'page_obj': page_obj})
 
 
 
@@ -1373,11 +1566,147 @@ def cancel_meeting(request, pk):
 
 
 # views.py
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status, permissions
+# from django.utils import timezone
+# from datetime import timedelta
+# from .models import DailyUpdates
+
+# class SubmitDailyTaskAPIView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def post(self, request):
+#         user = request.user
+#         project_count = 1
+
+#         # Loop through projects dynamically
+#         while f'project_{project_count}' in request.data:
+#             project_id = request.data.get(f'project_{project_count}')
+
+#             # Get lists from JSON
+#             tasks = request.data.get(f'tasks_project{project_count}', [])
+#             times = request.data.get(f'time_taken{project_count}', [])
+#             statuses = request.data.get(f'status{project_count}', [])
+#             dates = request.data.get(f'task_date{project_count}', [])
+
+#             # Make sure each is a list
+#             if not isinstance(tasks, list):
+#                 tasks = [tasks]
+#             if not isinstance(times, list):
+#                 times = [times]
+#             if not isinstance(statuses, list):
+#                 statuses = [statuses]
+#             if not isinstance(dates, list):
+#                 dates = [dates]
+
+#             for i, task in enumerate(tasks):
+#                 task = task.strip()
+#                 if task:
+#                     # Convert time_taken string "HH:MM" to timedelta
+#                     time_taken = None
+#                     if i < len(times) and times[i]:
+#                         h, m = map(int, times[i].split(':'))
+#                         time_taken = timedelta(hours=h, minutes=m)
+
+#                     DailyUpdates.objects.create(
+#                         user=user,
+#                         project_id=project_id,
+#                         task_description=task,
+#                         time_taken=time_taken,
+#                         status=statuses[i] if i < len(statuses) else 'pending',
+#                         task_date=dates[i] if i < len(dates) else timezone.localdate()
+#                     )
+
+#             project_count += 1
+
+#         return Response({'detail': 'Daily tasks submitted successfully.'}, status=status.HTTP_201_CREATED)
+
+
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def schedule_meeting_api(request):
+    
+#     serializer = MeetingSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save(host=request.user)  
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ScheduleMeetingAPIView(generics.CreateAPIView):
+    queryset = Meeting.objects.all()
+    serializer_class = MeetingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(host=self.request.user)
+
+
+
+
+
+class UpdateMeetingAPIView(generics.RetrieveUpdateAPIView):
+    queryset = Meeting.objects.all()
+    serializer_class = MeetingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        meeting = self.get_object()
+
+        # Only host can update the meeting
+        if meeting.host != request.user:
+            return Response(
+                {"detail": "You are not authorized to edit this meeting."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return super().update(request, *args, **kwargs)
+
+
+
+
+class CancelMeetingAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        meeting = get_object_or_404(Meeting, pk=pk)
+
+        # Only the host can cancel
+        if meeting.host != request.user:
+            return Response(
+                {"detail": "Only the host can cancel this meeting."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        reason = request.data.get("reason", "").strip()
+        if not reason:
+            return Response(
+                {"detail": "Cancellation reason is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        meeting.is_cancel = True
+        meeting.reason = reason
+        meeting.save()
+
+        return Response(
+            {
+                "detail": "Meeting canceled successfully.",
+                "meeting": MeetingSerializer(meeting).data
+            },
+            status=status.HTTP_200_OK
+        )
+    
+
+
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.utils import timezone
-from datetime import timedelta
 from .models import DailyUpdates
 
 class SubmitDailyTaskAPIView(APIView):
@@ -1387,34 +1716,32 @@ class SubmitDailyTaskAPIView(APIView):
         user = request.user
         project_count = 1
 
-        # Loop through projects dynamically
         while f'project_{project_count}' in request.data:
             project_id = request.data.get(f'project_{project_count}')
 
-            # Get lists from JSON
-            tasks = request.data.get(f'tasks_project{project_count}', [])
-            times = request.data.get(f'time_taken{project_count}', [])
-            statuses = request.data.get(f'status{project_count}', [])
-            dates = request.data.get(f'task_date{project_count}', [])
+            tasks = request.data.get(f'tasks_project_{project_count}', [])
+            times = request.data.get(f'time_taken_{project_count}', [])
+            statuses = request.data.get(f'status_{project_count}', [])
 
-            # Make sure each is a list
+            # Always normalize to lists
             if not isinstance(tasks, list):
                 tasks = [tasks]
             if not isinstance(times, list):
                 times = [times]
             if not isinstance(statuses, list):
                 statuses = [statuses]
-            if not isinstance(dates, list):
-                dates = [dates]
 
             for i, task in enumerate(tasks):
                 task = task.strip()
                 if task:
-                    # Convert time_taken string "HH:MM" to timedelta
+                    # Convert HH:MM → timedelta
                     time_taken = None
                     if i < len(times) and times[i]:
                         h, m = map(int, times[i].split(':'))
                         time_taken = timedelta(hours=h, minutes=m)
+
+                    # Always use today’s date
+                    task_date = timezone.localdate()
 
                     DailyUpdates.objects.create(
                         user=user,
@@ -1422,9 +1749,43 @@ class SubmitDailyTaskAPIView(APIView):
                         task_description=task,
                         time_taken=time_taken,
                         status=statuses[i] if i < len(statuses) else 'pending',
-                        task_date=dates[i] if i < len(dates) else timezone.localdate()
+                        task_date=task_date
                     )
 
             project_count += 1
 
         return Response({'detail': 'Daily tasks submitted successfully.'}, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+# class ApprovedUsersAPI(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+        
+
+#         approved_users = User.objects.filter(is_approved=True)
+#         serializer = ApproveUserSerializer(approved_users, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+class ApprovedListsAPI(APIView):
+    permission_classes = [permissions.AllowAny]   # 👈 Anyone can access
+
+    def get(self, request):
+        approved_users = User.objects.filter(is_approved=True)
+        serializer = ApproveUserSerializer(approved_users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
