@@ -18,7 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, get_user_model
 
-from .serializers import LoginSerializer
+from .serializers import LoginSerializer,DailyUpdatesSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import ProjectAssignment
@@ -1636,13 +1636,75 @@ def cancel_meeting(request, pk):
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ScheduleMeetingAPIView(generics.CreateAPIView):
+# class ScheduleMeetingAPIView(generics.CreateAPIView):
+#     queryset = Meeting.objects.all()
+#     serializer_class = MeetingSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         serializer.save(host=self.request.user)
+
+
+
+from rest_framework import generics, permissions
+from .models import Meeting
+from .serializers import MeetingSerializer
+
+class ScheduleMeetingAPIView(generics.ListCreateAPIView):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(host=self.request.user)
+
+    # def get_queryset(self):
+    #     #
+    #     now = timezone.now()
+    #     today = now.date()
+    #     ongoing_or_today = Q(date=today, time__gte=now.time())
+    #     future = Q(date__gt=today)
+    #     # Show ALL meetings with full details
+    #     # return Meeting.objects.all().order_by("-id")
+    #     return Meeting.objects.filter(ongoing_or_today | future).order_by("-id")
+
+
+
+    def get_queryset(self):
+        now = timezone.localtime()  # safer than timezone.now() to respect settings
+        today = now.date()
+        current_time = now.time()
+
+        # Meetings today but not finished
+        today_meetings = Q(meeting_date=today, meeting_time__gte=current_time)
+        # Future meetings
+        future_meetings = Q(meeting_date__gt=today)
+
+        return Meeting.objects.filter(today_meetings | future_meetings).order_by("meeting_date", "meeting_time")
+    
+
+
+class ParticipantMeetingsAPIView(generics.ListAPIView):
+    serializer_class = MeetingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        now = timezone.localtime()
+        today = now.date()
+        current_time = now.time()
+
+        # Meetings today but not finished
+        today_meetings = Q(meeting_date=today, meeting_time__gte=current_time)
+        # Future meetings
+        future_meetings = Q(meeting_date__gt=today)
+
+        return Meeting.objects.filter(
+            Q(participants=user) & (today_meetings | future_meetings)
+        ).order_by("meeting_date", "meeting_time")
+
+
+    
 
 
 
@@ -1664,7 +1726,8 @@ class UpdateMeetingAPIView(generics.RetrieveUpdateAPIView):
             )
 
         return super().update(request, *args, **kwargs)
-
+    
+  
 
 
 
@@ -1701,6 +1764,9 @@ class CancelMeetingAPIView(APIView):
         )
     
 
+    
+    
+
 
 from datetime import timedelta
 from django.utils import timezone
@@ -1708,6 +1774,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import DailyUpdates
+from .serializers import DailyUpdatesSerializer
 
 class SubmitDailyTaskAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -1755,6 +1822,20 @@ class SubmitDailyTaskAPIView(APIView):
             project_count += 1
 
         return Response({'detail': 'Daily tasks submitted successfully.'}, status=status.HTTP_201_CREATED)
+    def get(self, request):
+        """Return daily tasks for the logged-in user."""
+        user = request.user
+        # task_date = request.query_params.get("date", timezone.localdate())
+
+        tasks = DailyUpdates.objects.filter(user=user).order_by("task_date")
+        serializer = DailyUpdatesSerializer(tasks, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+       
+
+
+    
+
 
 
 

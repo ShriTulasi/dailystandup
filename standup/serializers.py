@@ -106,7 +106,7 @@ class LoginSerializer(serializers.Serializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'lead']  # no 'id'
+        fields = ['name', 'description','id']  # no  'lead'
         read_only_fields = ['lead']  # lead will be set from request.user
 
 
@@ -368,8 +368,8 @@ class MeetingSerializer(serializers.ModelSerializer):
             "meeting_time",
             "meeting_date",
             "link",
-            "is_cancel",
-            "reason",
+            # "is_cancel",
+            # "reason",
         ]
 
     def create(self, validated_data):
