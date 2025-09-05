@@ -33,6 +33,39 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']  # only User fields
 
+
+
+
+    # def clean_email(self):
+    #     email = self.cleaned_data.get("email")
+    #     if User.objects.filter(email=email).exists():
+    #         raise forms.ValidationError("This email is already registered.")
+    #     return email
+
+    # def clean_phone(self):
+    #     phone = self.cleaned_data.get("phone")
+    #     if EmpProfile.objects.filter(phone=phone).exists():
+    #         raise forms.ValidationError("This phone number is already registered.")
+    #     return phone
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Phone validation
+        phone = cleaned_data.get('phone')
+        if phone:
+            if not phone.isdigit() or len(phone) != 10:
+                self.add_error('phone', "Enter a valid 10-digit phone number.")
+            elif EmpProfile.objects.filter(phone=phone).exists():
+                self.add_error('phone', "This phone number is already registered.")
+
+        # Email validation
+        email = cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
+            self.add_error('email', "This email is already registered.")
+
+        return cleaned_data
+
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_active = False   # cannot login until approved

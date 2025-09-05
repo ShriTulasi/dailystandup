@@ -12,6 +12,33 @@ admin.site.register(Meeting)
 
 
 
+
+
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User, EmpProfile
+
+class EmpProfileInline(admin.StackedInline):  
+    model = EmpProfile
+    can_delete = False
+    extra = 0
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [EmpProfileInline]   # show profile in user admin
+    list_display = ("username", "email", "get_phone", "is_active", "is_staff")
+    search_fields = ("username", "email", "empprofile__phone")
+
+    def get_phone(self, obj):
+        return obj.empprofile.phone if hasattr(obj, "empprofile") else "-"
+    get_phone.short_description = "Phone"
+
+# Re-register User with custom admin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
+
+
+
+
 class ProjectAssignmentAdmin(admin.ModelAdmin):
     list_display = ('project', 'assigned_employees', 'assigned_at')  # show employees in list
 
