@@ -48,8 +48,8 @@ class EmployeeProject(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="profile")
-    phone = models.CharField(max_length=15)
-    field = models.CharField(max_length=16)
+    phone = models.CharField(max_length=15,unique=True)
+    field = models.CharField(max_length=16,unique=True)
     designation = models.CharField(max_length=100)
 
     def __str__(self):
@@ -83,7 +83,7 @@ class ProjectAssignment(models.Model):
 
 class EmpProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="emp")
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15,unique=True)
     address = models.TextField()
     profile = models.FileField()
     dob = models.DateField(blank=True, null=True)

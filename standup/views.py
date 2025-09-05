@@ -1831,7 +1831,70 @@ class SubmitDailyTaskAPIView(APIView):
         serializer = DailyUpdatesSerializer(tasks, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-       
+
+
+
+# class SubmitDailyTaskAPIView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def post(self, request):
+#         user = request.user
+#         projects_data = request.data.get("projects", [])
+#         created_tasks = []
+
+#         for project_data in projects_data:
+#             project_id = project_data.get("project_id")
+#             project = get_object_or_404(Project, id=project_id)
+
+#             tasks = project_data.get("tasks", [])
+#             for task in tasks:
+#                 description = task.get("description", "").strip()
+#                 if not description:
+#                     continue
+
+#                 # Parse time safely
+#                 time_taken = None
+#                 if task.get("time_taken"):
+#                     try:
+#                         h, m = map(int, task["time_taken"].split(":"))
+#                         time_taken = timedelta(hours=h, minutes=m)
+#                     except (ValueError, IndexError):
+#                         pass
+
+#                 daily_update = DailyUpdates.objects.create(
+#                     user=user,
+#                     project=project,
+#                     task_description=description,
+#                     time_taken=time_taken,
+#                     status=task.get("status", "pending"),
+#                     task_date=timezone.localdate(),
+#                 )
+
+#                 created_tasks.append({
+#                     "id": daily_update.id,
+#                     "project": project.name,
+#                     "task": daily_update.task_description,
+#                     "status": daily_update.status,
+#                     "task_date": daily_update.task_date
+#                 })
+
+#         return Response(
+#             {"detail": "Daily tasks submitted successfully.", "tasks": created_tasks},
+#             status=status.HTTP_201_CREATED
+#         )
+#     def get(self, request):
+        
+# #         """Return daily tasks for the logged-in user."""
+#         user = request.user
+#         # task_date = request.query_params.get("date", timezone.localdate())
+
+#         tasks = DailyUpdates.objects.filter(user=user).order_by("task_date")
+#         serializer = DailyUpdatesSerializer(tasks, many=True)
+
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+      
+    
+
 
 
     

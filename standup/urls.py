@@ -37,8 +37,10 @@ urlpatterns=[
     path('api/logout_api/',logout_api,name='logout_api'),
     path('api/ProjectList/',ProjectList.as_view(),name='ProjectList'),
     path('api/ParticipantMeetingsAPIView/',ParticipantMeetingsAPIView.as_view(),name='ParticipantMeetingsAPIView')
+
     
 
 
     
 ]
+
