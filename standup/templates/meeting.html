@@ -170,10 +170,44 @@
     .form-label {
       font-weight: 500;
     }
+     body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+    }
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #343a40;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      padding: 12px 20px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #ddd;
+      display: block;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+      color: #fff;
+      border-left: 3px solid #0d6efd;
+    }
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: #0d6efd !important;
+    }
   </style>
 </head>
 <body>
-  <div class="sidebar">
+  <!-- <div class="sidebar">
     <h4 class="text-center text-white mb-3">Lead Panel</h4>
     <hr class="bg-light">
     <a href="{% url 'add_project' %}">➕ Add Project</a>
@@ -182,6 +216,26 @@
     <a href="{% url 'team_lead_task_view' %}">📜 Task Updates</a>
     <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
     <a href="{% url 'logout_view' %}">🚪 Logout</a>
+  </div> -->
+
+
+
+  <div class="sidebar">
+    <h4 class="text-center text-white">Lead Panel</h4>
+    <hr class="bg-light">
+    
+    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <!-- <a href="{% url 'add_profile' %}">👤 Add Profile</a> -->
+     <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
+    <a href="{% url 'approval_list' %}">📂 Approve List</a>
+    <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
+    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
+    <!-- <a href="{% url 'employee_task_history' %}">📜 Task History</a> -->
+     <a href="{% url 'lead_task_history' %}">📜 Task History</a>
+    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
+   🚪 Logout</a>
   </div>
 
   <div class="content">

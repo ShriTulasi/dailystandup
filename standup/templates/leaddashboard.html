@@ -52,13 +52,13 @@
     <hr class="bg-light">
     
     <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
     <a href="{% url 'assign_project' %}">📂 Assign Project</a>
     <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
     <a href="{% url 'approval_list' %}">📂 Approve List</a>
     <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-    <a href="{% url 'employee_task_history' %}">📜 Task History</a>
+    <a href="{% url 'lead_daily_task' %}">➕ Update Task</a>
+    <a href="{% url 'lead_task_history' %}">📜 Task History</a>
     <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
    🚪 Logout</a>
   </div>

@@ -1239,6 +1239,63 @@ def submit_daily_task(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='login')
+def lead_daily_task(request):
+    if request.method == 'POST':
+        project_count = 1
+        while f'project_{project_count}' in request.POST:
+            project_id = request.POST.get(f'project_{project_count}')
+
+            tasks = request.POST.getlist(f'tasks_project_{project_count}[]')
+            times = request.POST.getlist(f'time_taken_{project_count}[]')
+            statuses = request.POST.getlist(f'status_{project_count}[]')
+            # dates = request.POST.getlist(f'task_date_{project_count}[]')
+
+            for i, task in enumerate(tasks):
+                task = task.strip()
+                if task:
+                    # Convert time_taken string to timedelta
+                    time_taken = None
+                    if i < len(times) and times[i]:
+                        h, m = map(int, times[i].split(':'))
+                        from datetime import timedelta
+                        time_taken = timedelta(hours=h, minutes=m)
+
+                    DailyUpdates.objects.create(
+                        user=request.user,
+                        project_id=project_id,
+                        task_description=task,
+                        time_taken=time_taken,
+                        status=statuses[i] if i < len(statuses) else 'pending',
+                        # task_date=dates[i] if i < len(dates) else timezone.localdate()
+                        task_date=timezone.localdate()  
+                    )
+
+            project_count += 1
+
+        return redirect('tech_dashboard')
+
+    else:
+        form = DailyTaskForm()
+        today = timezone.localdate()  # ← send today's date to template
+        return render(request, 'lead_dailystandup.html', {'form': form, 'today': today})
+
+
 # from django.contrib.auth.decorators import login_required
 # from django.shortcuts import render
 # from .models import DailyUpdates
@@ -1346,6 +1403,36 @@ def employee_task_history(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'emptaskhistory.html',{'page_obj': page_obj})
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='login')
+def lead_task_history(request):
+    tasks = DailyUpdates.objects.filter(user=request.user).order_by('-task_date')
+    
+    # convert time_taken to string for display
+    for task in tasks:
+        if task.time_taken:
+            total_seconds = task.time_taken.total_seconds()
+            hours = int(total_seconds // 3600)
+            minutes = int((total_seconds % 3600) // 60)
+            task.time_taken_str = f"{hours}h {minutes}m"
+        else:
+            task.time_taken_str = "-"
+
+    paginator = Paginator(tasks,15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'lead_task_history.html',{'page_obj': page_obj})
 
 
 
