@@ -350,13 +350,40 @@ class DailyUpdatesSerializer(serializers.ModelSerializer):
 
 
 
+# class MeetingSerializer(serializers.ModelSerializer):
+#     host = serializers.StringRelatedField(read_only=True)  # shows host username
+#     participants = serializers.SlugRelatedField(
+#         many=True,
+#         slug_field='username',   # accept "username" instead of ID
+#         queryset=User.objects.all()
+#     )
+
+#     class Meta:
+#         model = Meeting
+#         fields = [
+#             "id",
+#             "host",
+#             "participants",
+#             "about",
+#             "meeting_time",
+#             "meeting_date",
+#             "link",
+#             # "is_cancel",
+#             # "reason",
+#         ]
+
+#     def create(self, validated_data):
+#         participants = validated_data.pop("participants", [])
+#         meeting = Meeting.objects.create(**validated_data)
+#         meeting.participants.set(participants)
+#         return meeting
+
+
+
+
 class MeetingSerializer(serializers.ModelSerializer):
-    host = serializers.StringRelatedField(read_only=True)  # shows host username
-    participants = serializers.SlugRelatedField(
-        many=True,
-        slug_field='username',   # accept "username" instead of ID
-        queryset=User.objects.all()
-    )
+    host = serializers.CharField(source="host.username", read_only=True)  # only username
+    participants = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
@@ -368,15 +395,17 @@ class MeetingSerializer(serializers.ModelSerializer):
             "meeting_time",
             "meeting_date",
             "link",
-            # "is_cancel",
-            # "reason",
         ]
 
-    def create(self, validated_data):
-        participants = validated_data.pop("participants", [])
-        meeting = Meeting.objects.create(**validated_data)
-        meeting.participants.set(participants)
-        return meeting
+    def get_participants(self, obj):
+        # get participants usernames
+        participant_names = list(obj.participants.values_list("username", flat=True))
+        # add host username also
+        host_name = obj.host.username
+        if host_name not in participant_names:
+            participant_names.insert(0, host_name)  # put host first
+        return participant_names
+
 
 
 
