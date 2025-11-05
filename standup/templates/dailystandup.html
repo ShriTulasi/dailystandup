@@ -1,703 +1,475 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Daily Standup</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-    }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-      transition: 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
-    .navbar-brand {
-      font-weight: bold;
-      color: #0d6efd !important;
-    }
-    .card {
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .task-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .task-row input {
-      flex: 1;
-    }
-    .task-buttons button {
-      min-width: 40px;
-    }
-    .project-block {
-      border: 1px solid #dee2e6;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background: #fff;
-    }
-  </style>
-</head>
-<body>
+  {% load static %}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Daily Standup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #343a40;
+        padding-top: 20px;
+      }
+      .sidebar a {
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #ddd;
+        display: block;
+        border-left: 3px solid transparent;
+        transition: 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+        color: #fff;
+        border-left: 3px solid #0d6efd;
+      }
+      .content {
+        margin-left: 260px;
+        padding: 30px;
+      }
+      .task-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .task-row input, .task-row select {
+        flex: 1;
+      }
+      .task-buttons button {
+        min-width: 40px;
+      }
+      .project-block {
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .project-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        color: #0d6efd;
+      }
+      .sidebar-logo img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto;
+      }
 
+
+
+      .task-row .col-md-2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-row .btn i {
+    font-size: 1.1rem;
+    vertical-align: middle;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #007bff, #6610f2);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, #6610f2, #007bff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 16, 242, 0.4);
+  }
+
+  .btn-gradient i {
+    font-size: 1.2rem;
+    vertical-align: middle;
+  }
+  .btn-gradient-primary {
+    background: linear-gradient(135deg, #007bff, #6610f2);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-gradient-primary:hover {
+    background: linear-gradient(135deg, #6610f2, #007bff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 16, 242, 0.4);
+  }
+
+  .btn-gradient-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-gradient-secondary:hover {
+    background: linear-gradient(135deg, #495057, #6c757d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(73, 80, 87, 0.4);
+  }
+
+  .btn-gradient-primary i,
+  .btn-gradient-secondary i {
+    font-size: 1.2rem;
+    vertical-align: middle;
+  }
+
+  /* --- Office Daily Standup Tab Styles --- */
+  .standup-tabs {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 8px 15px;
+  }
+
+  .standup-tabs .nav-link {
+    border: none;
+    border-radius: 30px;
+    color: #495057;
+    font-weight: 500;
+    padding: 10px 25px;
+    margin: 4px;
+    transition: all 0.25s ease-in-out;
+    display: flex;
+    align-items: center;
+  }
+
+  .standup-tabs .nav-link i {
+    font-size: 1.1rem;
+  }
+
+  .standup-tabs .nav-link:hover {
+    background-color: #e9f3ff;
+    color: #0d6efd;
+    transform: translateY(-1px);
+  }
+
+  .standup-tabs .nav-link.active {
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.3);
+    transform: translateY(-1px);
+  }
+
+
+
+
+    </style>
+  </head>
+  <body>
+
+  {% if request.user.role == "employee" %}
   <div class="sidebar">
-    <h4 class="text-center text-white mb-3">Lead Panel</h4>
+    <h4 class="text-center text-white">Employee Panel</h4>
     <hr class="bg-light">
-    <a href="#">➕ Add Project</a>
-    <a href="#">👤 Add Profile</a>
-    <a href="#">📂 Assign Project</a>
-    <a href="#">📜 Task History</a>
-    <a href="#">🚪 Logout</a>
+    <div class="sidebar-logo text-center mx-5">
+      <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
+    </div>
+    <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📜 Task History</a>
+    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">🚪 Logout</a>
   </div>
-
+  {% else %}
+  <div class="sidebar">
+    <h4 class="text-center text-white">Tech Panel</h4>
+    <hr class="bg-light">
+    <div class="sidebar-logo text-center mx-5">
+      <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
+    </div>
+    <a href="{% url 'add_project' %}">➕ Add Project</a>
+    <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
+    <a href="{% url 'approval_list' %}">📂 Approve List</a>
+    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
+    <a href="{% url 'submit_daily_task' %}">📝 Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📊 Task History</a>
+    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">🚪 Logout</a>
+  </div>
+  {% endif %}
 
   <div class="content">
     <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-      <div class="container w-100 d-flex justify-content-center align-items-center">
-        <a class="navbar-brand me-auto">Daily Standup</a>
+      <div class="container w-100 d-flex justify-content-between align-items-center">
+        <a class="navbar-brand">Daily Standup</a>
         <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
       </div>
     </nav>
 
-  
-    <div class="container mt-4 col-md-8">
-      <div class="card shadow-sm p-4">
-        <h4 class="mb-4 text-primary fw-bold">Update Your Daily Standup</h4>
+    <div class="container col-md-10">
+      <form method="post">
+        {% csrf_token %}
 
-        <form method="post">
-          {% csrf_token %}
+       
+  <ul class="nav nav-pills mb-4 standup-tabs justify-content-center" id="taskTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="yesterday-tab" data-bs-toggle="tab" data-bs-target="#yesterday" type="button" role="tab">
+        <i class="bi bi-calendar-check me-2"></i> What You Did Yesterday
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">
+        <i class="bi bi-lightning-charge me-2"></i> What You Will Do Today
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="blockers-tab" data-bs-toggle="tab" data-bs-target="#blockers" type="button" role="tab">
+        <i class="bi bi-exclamation-triangle me-2"></i> Blockers
+      </button>
+    </li>
+  </ul>
 
-         
-          <div id="projects-container">
 
-           
-            <div class="project-block">
-              <div class="form-floating mb-3">
-                {{ form.project }}
-                <label for="id_project">Select Project</label>
+        <!-- ✅ TAB CONTENT -->
+        <div class="tab-content" id="taskTabsContent">
+
+          <!-- 🟦 Yesterday Tab -->
+          <div class="tab-pane fade show active" id="yesterday" role="tabpanel" aria-labelledby="yesterday-tab">
+            <div id="projects-container-yesterday">
+              <div class="project-block" id="project-yesterday-1">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="project-header">What You Did Yesterday?</div>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject(this, 'yesterday')">➕ Add Another Project</button>
+                </div>
+
+                <div class="row mb-3 align-items-end">
+                  <div class="col-md-6">
+                    <label>Select Project</label>
+                    <select name="project_yesterday_1" class="form-select" required>
+                      {% for p in form.fields.project.queryset %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label>Date</label>
+                    <input type="date" name="task_date_yesterday_1[]" class="form-control" value="{{ today|date:'Y-m-d' }}" readonly>
+                  </div>
+                </div>
+
+                <div id="task-container-yesterday-1">
+                  <div class="task-row g-2 mb-2 align-items-center row">
+                    <div class="col-md-6">
+                      <input type="text" name="tasks_yesterday_1[]" class="form-control" placeholder="Task description" required>
+                    </div>
+                    <div class="col-md-2">
+                      <input type="time" name="time_taken_yesterday_1[]" class="form-control" value="01:00" required>
+                    </div>
+                    <div class="col-md-2">
+                      <select name="status_yesterday_1[]" class="form-select" required>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                    <!-- <div class="col-md-2">
+                      <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
+                    </div> -->
+                    <div class="col-md-1">
+                      <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">
+                        <i class="bi bi-plus-circle"></i>+
+                      </button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">
+                        <i class="bi bi-dash-circle"></i>-
+                      </button>
+                    </div>
+                    
+
+                  </div>
+                  
+                </div>
+                
               </div>
+            </div>
+            <div class="text-center mt-4">
+    <button type="button" class="btn btn-gradient" onclick="goToNextTab('today-tab')">
+      Next <i class="bi bi-arrow-right-circle ms-1"></i>
+    </button>
+  </div>
 
-              <div id="task-container-1">
-                <div class="task-row">
-                  <input type="text" name="tasks_project_1[]" class="form-control" placeholder="Enter task" required>
-                  <div class="task-buttons">
-                    <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
+
+            
+          
+          </div>
+
+          <!-- 🟩 Today Tab -->
+          <div class="tab-pane fade" id="today" role="tabpanel" aria-labelledby="today-tab">
+            <div id="projects-container-today" class="mt-3">
+              <div class="project-block" id="project-today-1">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="project-header">What You Will Do Today?</div>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject(this, 'today')">➕ Add Another Project</button>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label>Select Project</label>
+                    <select name="project_today_1" class="form-select" required>
+                      {% for p in form.fields.project.queryset %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div id="task-container-today-1">
+                  <div class="task-row g-2 mb-2 align-items-center row">
+                    <div class="col-md-6">
+                      <input type="text" name="tasks_today_1[]" class="form-control" placeholder="Task description">
+                    </div>
+                    <div class="col-md-2">
+                      <input type="time" name="time_taken_today_1[]" class="form-control" value="01:00" required>
+                    </div>
+                    <div class="col-md-2">
+                      <select name="status_today_1[]" class="form-select" required>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                    <!-- <div class="col-md-2">
+                      <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
+                    </div> -->
+
+
+
+                    <div class="col-md-1">
+                      <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">
+                        <i class="bi bi-plus-circle"></i>+
+                      </button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">
+                        <i class="bi bi-dash-circle"></i>-
+                      </button>
+                    </div>
+
                   </div>
                 </div>
               </div>
             </div>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+    <button type="button" class="btn btn-gradient-secondary" onclick="goToNextTab('yesterday-tab')">
+      <i class="bi bi-arrow-left-circle me-1"></i> Back
+    </button>
+
+    <button type="button" class="btn btn-gradient-primary" onclick="goToNextTab('blockers-tab')">
+      Next <i class="bi bi-arrow-right-circle ms-1"></i>
+    </button>
+  </div>
+
+
+            
 
           </div>
-
           
-          <div class="mt-3">
-            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject()">➕ Add Another Project Task</button>
-          </div>
 
         
-          <div class="d-flex justify-content-end gap-2 mt-4">
-            <button type="submit" class="btn btn-primary">Submit Task</button>
-            <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'employee_dashboard' %}'">Cancel</button>
-          </div>
-        </form>
+  <div class="tab-pane fade" id="blockers" role="tabpanel" aria-labelledby="blockers-tab">
 
+    <div class="project-block mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="project-header"> You have any Blockers?</div>
       </div>
+
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label for="blocker_project_id" class="form-label">Select Project</label>
+          <select name="blocker_project_id" id="blocker_project_id" class="form-select">
+            
+            {% for p in form.fields.project.queryset %}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-12">
+          <label for="blockers_description" class="form-label">Describe Your Blocker</label>
+          <textarea name="blockers_description" id="blockers_description" class="form-control" rows="3" placeholder="Describe any blockers..."></textarea>
+        </div>
+      </div>
+
+      
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <button type="button" class="btn btn-gradient-secondary" onclick="goToNextTab('today-tab')">
+          <i class="bi bi-arrow-left-circle me-1"></i> Back
+        </button>
+        <button type="submit" class="btn btn-gradient-primary">
+          Submit Daily Task <i class="bi bi-check-circle ms-1"></i>
+        </button>
+      </div>
+
+  </div>
+
+
+        </div>
+
+      
+
+      </form>
     </div>
   </div>
 
-  
+
   <script>
   let projectCount = 1;
 
+  // ✅ FIXED: addTask correctly finds the parent container and clones proper names
   function addTask(button) {
-    const container = button.closest(".project-block").querySelector("[id^=task-container]");
-
-    // hide + button from current row
-    button.style.display = "none";
-
-    // create new row
-    const newRow = document.createElement("div");
-    newRow.classList.add("task-row");
-    newRow.innerHTML = `
-      <input type="text" name="${container.id.replace('task-container','tasks_project')}[]" 
-             class="form-control" placeholder="Enter task" required>
-      <div class="task-buttons">
-        <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-      </div>
-    `;
-    container.appendChild(newRow);
-  }
-
-  function removeTask(button) {
-    const row = button.closest(".task-row");
-    const container = row.parentElement;
-
-    // if it's the last row and has a previous sibling → restore its + button
-    if (row.nextElementSibling === null && row.previousElementSibling) {
-      const prevPlusBtn = row.previousElementSibling.querySelector(".btn-success");
-      if (prevPlusBtn) prevPlusBtn.style.display = "inline-block";
-    }
-
-    // prevent removing the very first row
-    if (container.children.length > 1) {
-      row.remove();
-    } else {
-      alert("At least one task is required!");
-    }
-  }
-
-
-
-
-
-
-function addProject() {
-    projectCount++;
-    const projectBlock = document.createElement('div');
-    projectBlock.classList.add('project-block');
-
-    projectBlock.innerHTML = `
-        <div class="form-floating mb-3">
-            <select name="project" class="form-select" required>
-                {% for p in form.fields.project.queryset %}
-                    <option value="{{ p.id }}">{{ p.name }}</option>
-                {% endfor %}
-            </select>
-            <label>Select Project</label>
-        </div>
-        <div id="task-container-${projectCount}">
-            <div class="task-row">
-                <input type="text" name="tasks_project_${projectCount}[]" class="form-control" placeholder="Enter task" required>
-                <div class="task-buttons">
-                    <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('projects-container').appendChild(projectBlock);
-}
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> -->
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Daily Standup</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; }
-    .task-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .task-row input { flex: 1; }
-    .task-buttons button { min-width: 40px; }
-    .project-block { border: 1px solid #dee2e6; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #fff; }
-  </style>
-</head>
-<body>
-<div class="container mt-4 col-md-8">
-  <div class="card shadow-sm p-4">
-    <h4 class="mb-4 text-primary fw-bold">Update Your Daily Standup</h4>
-    <form method="post">
-      {% csrf_token %}
-
-      
-      <div id="projects-container">
-       
-        <div class="project-block" id="project-block-1">
-          <div class="form-floating mb-3">
-            <select name="project_1" class="form-select" required>
-              {% for p in form.fields.project.queryset %}
-                <option value="{{ p.id }}">{{ p.name }}</option>
-              {% endfor %}
-            </select>
-            <label>Select Project</label>
-          </div>
-          <div id="task-container-1">
-            <div class="task-row">
-              <input type="text" name="tasks_project_1" class="form-control" placeholder="Enter task" required>
-              <div class="task-buttons">
-                <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addProject()">➕ Add Another Project Task</button>
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="submit" class="btn btn-primary">Submit Task</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-let projectCount = 1;
-
-function addTask(button) {
-  const container = button.closest(".project-block").querySelector("[id^=task-container]");
-  button.style.display = "none"; 
-
-  const newRow = document.createElement("div");
-  newRow.classList.add("task-row");
-  newRow.innerHTML = `
-    <input type="text" name="${container.id.replace('task-container','tasks_project')}" class="form-control" placeholder="Enter task" required>
-    <div class="task-buttons">
-      <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-      <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-    </div>
-  `;
-  container.appendChild(newRow);
-}
-
-function removeTask(button) {
-  const row = button.closest(".task-row");
-  const container = row.parentElement;
-
-  if (row.nextElementSibling === null && row.previousElementSibling) {
-    const prevPlusBtn = row.previousElementSibling.querySelector(".btn-success");
-    if (prevPlusBtn) prevPlusBtn.style.display = "inline-block";
-  }
-
-  if (container.children.length > 1) {
-    row.remove();
-  } else {
-    alert("At least one task is required!");
-  }
-}
-
-function addProject() {
-  projectCount++;
-  const projectsContainer = document.getElementById("projects-container");
-  const projectBlock = document.createElement("div");
-  projectBlock.classList.add("project-block");
-  projectBlock.id = `project-block-${projectCount}`;
-
-  let options = `{% for p in form.fields.project.queryset %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}`;
-
-  projectBlock.innerHTML = `
-    <div class="form-floating mb-3">
-      <select name="project_${projectCount}" class="form-select" required>
-        ${options}
-      </select>
-      <label>Select Project</label>
-    </div>
-    <div id="task-container-${projectCount}">
-      <div class="task-row">
-        <input type="text" name="tasks_project_${projectCount}" class="form-control" placeholder="Enter task" required>
-        <div class="task-buttons">
-          <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-          <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-        </div>
-      </div>
-    </div>
-  `;
-  projectsContainer.appendChild(projectBlock);
-}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> -->
-
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Daily Standup</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; }
-    .task-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .task-row input { flex: 1; }
-    .task-buttons button { min-width: 40px; }
-    .project-block { border: 1px solid #dee2e6; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #fff; }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-      transition: 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
-    .navbar-brand {
-      font-weight: bold;
-      color: #0d6efd !important;
-    }
-    .card {
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .task-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .task-row input {
-      flex: 1;
-    }
-    .task-buttons button {
-      min-width: 40px;
-    }
-    .project-block {
-      border: 1px solid #dee2e6;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background: #fff;
-    }
-  </style>
-</head>
-<body>
-  <div class="sidebar">
-    <h4 class="text-center text-white mb-3">Lead Panel</h4>
-    <hr class="bg-light">
-    <a href="#">➕ Add Project</a>
-    <a href="#">👤 Add Profile</a>
-    <a href="#">📂 Assign Project</a>
-    <a href="#">📜 Task History</a>
-    <a href="#">🚪 Logout</a>
-  </div>
-  <div class="content">
-    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-      <div class="container w-100 d-flex justify-content-center align-items-center">
-        <a class="navbar-brand me-auto">Daily Standup</a>
-        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
-      </div>
-    </nav>
-<div class="container mt-4 col-md-8">
-  <div class="card shadow-sm p-4">
-    <h4 class="mb-4 text-primary fw-bold">Update Your Daily Standup</h4>
-    <form method="post">
-      {% csrf_token %}
-
-      
-      <div id="projects-container">
-      
-        <div class="project-block" id="project-block-1">
-          <div class="form-floating mb-3">
-            <select name="project_1" class="form-select" required>
-              {% for p in form.fields.project.queryset %}
-                <option value="{{ p.id }}">{{ p.name }}</option>
-              {% endfor %}
-            </select>
-            <label>Select Project</label>
-          </div>
-
-          <div id="task-container-1">
-            <div class="task-row">
-              <input type="text" name="tasks_project_1[]" class="form-control" placeholder="Enter task activity" required>
-              <input type="time" name="time_taken_1[]" class="form-control" placeholder="Time taken" required>
-               <select name="status_1[]" class="form-select" required>
-                  <option value="pending">Pending</option>
-                  <option value="completed">Completed</option>
-              </select>
-              <input type="date" name="task_date_1[]" class="form-control" value="{{ today }}" required>
-              <div class="task-buttons">
-                <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addProject()">➕ Add Another Project</button>
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="submit" class="btn btn-primary">Submit Task</button>
-        <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'employee_dashboard' %}'">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-let projectCount = 1;
-
-
-function addTask(button) {
-  const container = button.closest(".project-block").querySelector("[id^=task-container]");
-  button.style.display = "none"; 
-
-  const newRow = document.createElement("div");
-  newRow.classList.add("task-row");
-
-  const index = container.id.split("-")[2]; 
-  newRow.innerHTML = `
-    <input type="text" name="tasks_project_${index}[]" class="form-control" placeholder="Enter task" required>
-    <div class="task-buttons">
-      <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-      <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-    </div>
-  `;
-  container.appendChild(newRow);
-}
-
-
-function removeTask(button) {
-  const row = button.closest(".task-row");
-  const container = row.parentElement;
-
-  if (container.children.length > 1) {
-    row.remove();
-  } else {
-    alert("At least one task is required!");
-  }
-}
-
-
-function addProject() {
-  projectCount++;
-  const projectsContainer = document.getElementById("projects-container");
-
-  let options = `{% for p in form.fields.project.queryset %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}`;
-
-  const projectBlock = document.createElement("div");
-  projectBlock.classList.add("project-block");
-  projectBlock.id = `project-block-${projectCount}`;
-  projectBlock.innerHTML = `
-    <div class="form-floating mb-3">
-      <select name="project_${projectCount}" class="form-select" required>
-        ${options}
-      </select>
-      <label>Select Project</label>
-    </div>
-    <div id="task-container-${projectCount}">
-      <div class="task-row">
-        <input type="text" name="tasks_project_${projectCount}[]" class="form-control" placeholder="Enter task" required>
-        <div class="task-buttons">
-          <button type="button" class="btn btn-sm btn-success" onclick="addTask(this)">+</button>
-          <button type="button" class="btn btn-sm btn-danger" onclick="removeTask(this)">-</button>
-        </div>
-      </div>
-    </div>
-  `;
-  projectsContainer.appendChild(projectBlock);
-}
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> -->
-
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Daily Standup</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-    }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-      transition: 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
-    .task-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .task-row input, .task-row select {
-      flex: 1;
-    }
-    .task-buttons button {
-      min-width: 40px;
-    }
-    .project-block {
-      border: 1px solid #dee2e6;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      background: #fff;
-    }
-    .project-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-      color: #0d6efd;
-    }
-  </style>
-</head>
-<body>
-
-<div class="sidebar">
-  <h4 class="text-center text-white mb-3">Lead Panel</h4>
-  <hr class="bg-light">
-  <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
-  <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-  <a href="{% url 'employee_task_history' %}">📜 Task History</a>
-  <a href="{% url 'logout_view' %}">🚪 Logout</a>
-</div>
-
-<div class="content">
-  <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-    <div class="container w-100 d-flex justify-content-between align-items-center">
-      <a class="navbar-brand">Daily Standup</a>
-      <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
-    </div>
-  </nav>
-
-  <div class="container col-md-10">
-    <form method="post">
-      {% csrf_token %}
-      <div id="projects-container">
-        <div class="project-block" id="project-block-1">
-          <div class="project-header">Project 1</div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label>Select Project</label>
-              <select name="project_1" class="form-select" required>
-                {% for p in form.fields.project.queryset %}
-                  <option value="{{ p.id }}">{{ p.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div id="task-container-1">
-            <div class="task-row">
-              <input type="text" name="tasks_project_1[]" class="form-control" placeholder="Task description" required>
-              <input type="time" name="time_taken_1[]" class="form-control" placeholder="Time taken" required>
-              <select name="status_1[]" class="form-select" required>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
-              <input type="date" name="task_date_1[]" class="form-control" value="{{ today|date:'Y-m-d' }}" readonly>
-              <div class="task-buttons">
-                <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject()">➕ Add Another Project</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'employee_dashboard' %}'">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-  const today = "{{ today|date:'Y-m-d' }}";   // send today's date from Django to JS
-  let projectCount = 1;
-
-  function addTask(button) {
-    const container = button.closest(".project-block").querySelector("[id^=task-container]");
-    const index = container.id.split("-")[2];
+    const currentRow = button.closest(".task-row");
+    const container = currentRow.parentElement;
+
+    const textName = currentRow.querySelector('input[type="text"]').name;
+    const timeName = currentRow.querySelector('input[type="time"]').name;
+    const statusName = currentRow.querySelector('select').name;
 
     const newRow = document.createElement("div");
-    newRow.classList.add("task-row");
+    newRow.classList.add("task-row", "g-2", "mb-2", "align-items-center", "row");
     newRow.innerHTML = `
-      <input type="text" name="tasks_project_${index}[]" class="form-control" placeholder="Task description" required>
-      <input type="time" name="time_taken_${index}[]" class="form-control" required>
-      <select name="status_${index}[]" class="form-select" required>
-        <option value="pending">Pending</option>
-        <option value="completed">Completed</option>
-      </select>
-      <div class="task-buttons">
+      <div class="col-md-6">
+        <input type="text" name="${textName}" class="form-control" placeholder="Task description" required>
+      </div>
+      <div class="col-md-2">
+        <input type="time" name="${timeName}" class="form-control" value="01:00" required>
+      </div>
+      <div class="col-md-2">
+        <select name="${statusName}" class="form-select" required>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="col-md-1">
         <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
         <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
       </div>
@@ -715,45 +487,88 @@ function addProject() {
     }
   }
 
-  function addProject() {
+  // ✅ FIXED: addProject now keeps projects grouped by section
+  function addProject(button, section) {
     projectCount++;
-    const projectsContainer = document.getElementById("projects-container");
-
-    let options = `{% for p in form.fields.project.queryset %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}`;
+    const parentContainer = document.getElementById(`projects-container-${section}`);
+    const options = `{% for p in form.fields.project.queryset %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}`;
 
     const projectBlock = document.createElement("div");
-    projectBlock.classList.add("project-block");
-    projectBlock.id = `project-block-${projectCount}`;
+    projectBlock.classList.add("project-block", "mt-3");
+    projectBlock.id = `project-${section}-${projectCount}`;
     projectBlock.innerHTML = `
-      <div class="project-header">Project ${projectCount}</div>
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label>Select Project</label>
-          <select name="project_${projectCount}" class="form-select" required>
-            ${options}
-          </select>
-        </div>
-      </div>
-      <div id="task-container-${projectCount}">
-        <div class="task-row">
-          <input type="text" name="tasks_project_${projectCount}[]" class="form-control" placeholder="Task description" required>
-          <input type="time" name="time_taken_${projectCount}[]" class="form-control" required>
-          <select name="status_${projectCount}[]" class="form-select" required>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-          </select>
-          <!-- No date field for dynamically added tasks -->
-          <div class="task-buttons">
+  
+      <div class="d-flex justify-content-end align-items-center">
+    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeProject(this)">
+      <i class="bi bi-trash">🗑️</i>
+    </button>
+  </div>
+
+  <div class="row mb-3 align-items-end mt-2">
+    <div class="col-md-6">
+      <label>Select Project</label>
+      <select name="project_${section}_${projectCount}" class="form-select" required>
+        ${options}
+      </select>
+    </div>
+  </div>
+
+      <div id="task-container-${section}-${projectCount}">
+        <div class="task-row g-2 mb-2 align-items-center row">
+          <div class="col-md-6">
+            <input type="text" name="tasks_${section}_${projectCount}[]" class="form-control" placeholder="Task description" required>
+          </div>
+          <div class="col-md-2">
+            <input type="time" name="time_taken_${section}_${projectCount}[]" class="form-control" value="01:00" required>
+          </div>
+          <div class="col-md-2">
+            <select name="status_${section}_${projectCount}[]" class="form-select" required>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div class="col-md-1">
             <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
             <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
           </div>
         </div>
       </div>
     `;
-    projectsContainer.appendChild(projectBlock);
+    parentContainer.appendChild(projectBlock);
   }
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+  function removeProject(button) {
+    if (confirm("Are you sure you want to delete this project?")) {
+      button.closest(".project-block").remove();
+    }
+  }
+
+  // ✅ FIXED: cutoff time corrected to 10:30 AM
+  document.addEventListener("DOMContentLoaded", function() {
+    const now = new Date();
+    const cutoff = new Date();
+    cutoff.setHours(23, 30, 0, 0); // 10:30 AM
+    const submitBtn = document.querySelector("button[type='submit']");
+    if (now > cutoff) {
+      const warning = document.createElement("div");
+      warning.classList.add("alert", "alert-warning", "text-center", "fw-bold", "mt-3");
+      warning.textContent = "⏰ Time is over! You can’t submit your Daily Standup after 10:30 AM.";
+      document.body.prepend(warning);
+      if (submitBtn) submitBtn.disabled = true;
+    }
+  });
+
+
+  </script>
+  <script>
+  function goToNextTab(nextTabId) {
+    const nextTab = document.getElementById(nextTabId);
+    const tabTrigger = new bootstrap.Tab(nextTab);
+    tabTrigger.show();
+  }
+  </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+  </html>

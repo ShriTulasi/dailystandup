@@ -1,15 +1,29 @@
 
+
+
+
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tech Lead Dashboard</title>
+  <title>Employee Dashboard</title>
+
+  <!-- Bootstrap & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
     }
+
+    /* Sidebar */
     .sidebar {
       height: 100vh;
       width: 250px;
@@ -18,7 +32,28 @@
       left: 0;
       background-color: #343a40;
       padding-top: 20px;
+      overflow-y: auto;
     }
+
+    .sidebar h4 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .sidebar hr {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-logo img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      margin: 15px auto;
+    }
+
     .sidebar a {
       padding: 12px 20px;
       text-decoration: none;
@@ -26,155 +61,205 @@
       color: #ddd;
       display: block;
       border-left: 3px solid transparent;
+      transition: all 0.3s ease;
     }
+
     .sidebar a:hover {
       background-color: #495057;
       color: #fff;
       border-left: 3px solid #0d6efd;
     }
+
+    /* Content */
     .content {
       margin-left: 260px;
       padding: 30px;
     }
+
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
     .navbar-brand {
       font-weight: bold;
       color: #0d6efd !important;
+      font-size: 1.3rem;
+    }
+
+    /* Meetings Section */
+    .list-group-item {
+      border: none;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 12px;
+      padding: 18px;
+    }
+
+    .list-group-item h5 {
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Chart */
+    .chart-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 40px;
+    }
+
+    .chart-wrapper {
+      height: 420px;
+      position: relative;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .content {
+        margin-left: 0;
+        padding: 20px;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h4 class="text-center text-white">Tech Panel</h4>
-    <hr class="bg-light">
-    
-    <!-- <a href="{% url 'add_project' %}">➕ Add Profiel</a> -->
+    <h4>Tech Panel</h4>
+    <hr>
+    <div class="sidebar-logo">
+      <img src="{% static 'gfg.png' %}" alt="Logo">
+    </div>
     <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
     <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-
-   
     <a href="{% url 'employee_task_history' %}">📜 Task History</a>
-    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
-   🚪 Logout</a>
+    <a href="{% url 'employee_extra_history' %}">📝 Extra</a>
+    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">🚪 Logout</a>
   </div>
 
-  <!-- Page Content -->
+  <!-- Main Content -->
   <div class="content">
-    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-      <!-- <a class="navbar-brand" href="#">Tech Lead Dashboard</a> -->
-      <!-- <span class="text-muted py-2 ">Welcome, {{ request.user.username }}</span> -->
-      <div class="container w-100 d-flex justify-content-center">
-        <a class="navbar-brand" >Techteam Dashboard</a>
-        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
+    <!-- Navbar -->
+    <nav class="navbar rounded mb-4">
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+        <a class="navbar-brand">Techteam Dashboard</a>
+        <span class="fw-semibold fs-5 text-dark">Welcome, {{ request.user.username }}</span>
       </div>
     </nav>
-    
-    
 
-    <!-- <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body text-center">
-              <h5 class="card-title">Add Profile</h5>
-              <p class="card-text">Add your profile.</p>
-              <a href="#" class="btn btn-primary btn-sm">Go</a>
-            </div>
-          </div>
-        </div> -->
-        
-        <!-- <div class="col-md-4">
-          <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body text-center">
-              <h5 class="card-title">Add Updates</h5>
-              <p class="card-text">Fill your daily updates</p>
-              <a href="#" class="btn btn-success btn-sm">Go</a>
-            </div>
-          </div>
-        </div> -->
-        
-        
-        <!-- <div class="col-md-4">
-          <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body text-center">
-              <h5 class="card-title">Updates History</h5>
-              <p class="card-text">View daily updates from employees.</p>
-              <a href="#" class="btn btn-warning btn-sm">Go</a>
-            </div>
-          </div>
-        </div>
-        <div class="container">
-      <h3 class="mb-4">Upcoming Meetings</h3>
-      
+    <!-- Upcoming Meetings -->
+    <div class="container">
+      <h3 class="mb-4 fw-bold">📅 Upcoming Meetings</h3>
+
       {% if meetings %}
         <div class="list-group">
           {% for meeting in meetings %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
               <div>
-                <h5 class="mb-1">{{ meeting.about }}</h5>
-                <small>
-                  Date: {{ meeting.meeting_date }} | 
-                  Time: {{ meeting.meeting_time }}
-                </small>
+                {% if meeting.is_cancel %}
+                  <h5 class="text-danger"><i class="bi bi-x-circle me-1"></i> Meeting Canceled</h5>
+                  <small class="text-muted">Reason: {{ meeting.reason }}</small><br>
+                  <small>Scheduled Date: {{ meeting.meeting_date }} | Time: {{ meeting.meeting_time }}</small>
+                {% else %}
+                  <h5>{{ meeting.about }}</h5>
+                  <small>Date: {{ meeting.meeting_date }} | Time: {{ meeting.meeting_time }}</small><br>
+                  {% if meeting.link %}
+                    <a href="{{ meeting.link }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">Join Meeting</a>
+                  {% else %}
+                    <span class="text-muted">No link provided</span>
+                  {% endif %}
+                {% endif %}
               </div>
-              <span class="badge bg-primary">Upcoming</span>
+              {% if meeting.is_cancel %}
+                <span class="badge bg-danger align-self-start mt-2 mt-md-0">Canceled</span>
+              {% else %}
+                <span class="badge bg-primary align-self-start mt-2 mt-md-0">Upcoming</span>
+              {% endif %}
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <div class="alert alert-info">
-          No upcoming meetings.
-        </div>
+        <div class="alert alert-info">No upcoming meetings.</div>
       {% endif %}
     </div>
+
+    <!-- Chart -->
+    <div class="chart-container">
+      <h4 class="text-center mb-3">📊 Daily Tasks by Project</h4>
+      <div class="chart-wrapper">
+        <canvas id="dailyTasksChart"></canvas>
       </div>
-    </div> -->
-    <!-- Upcoming Meetings Section -->
-<div class="container mt-5">
-  <h3 class="mb-4">Upcoming Meetings</h3>
-  
-  {% if meetings %}
-    <div class="list-group">
-      {% for meeting in meetings %}
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-1">{{ meeting.about }}</h5>
-            <small>
-              Date: {{ meeting.meeting_date }} | 
-              Time: {{ meeting.meeting_time }}
-            </small><br>
-            {% if meeting.link %}
-              <a href="{{ meeting.link }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-                Join Meeting
-              </a>
-            {% else %}
-              <span class="text-muted">No link provided</span>
-            {% endif %}
-          </div>
-          <span class="badge bg-primary">Upcoming</span>
-        </div>
-      {% endfor %}
     </div>
-  {% else %}
-    <div class="alert alert-info">
-      No upcoming meetings.
-    </div>
-  {% endif %}
-</div>
-
-
-
   </div>
+
+  <!-- Chart Script -->
   <script>
-      document.getElementById("logout-btn").addEventListener("click", function(e) {
-          e.preventDefault(); // prevent default link behavior
-          if (confirm("Are you sure you want to logout?")) {
-              // Redirect to Django logout view
-              window.location.href = "{% url 'logout_view' %}";
-          } 
-          // If Cancel, nothing happens and user stays on dashboard
-      });
-</script>
+    const chartData = JSON.parse('{{ chart_data|escapejs }}');
+    const ctx = document.getElementById('dailyTasksChart').getContext('2d');
+    const projectBreakdown = chartData.project_breakdown;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.dates,
+        datasets: chartData.datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            padding: 12,
+            callbacks: {
+              title: ctx => "📅 " + ctx[0].label,
+              label: ctx => {
+                const date = ctx.label;
+                const project = ctx.dataset.label;
+                const breakdown = projectBreakdown[date]?.[project];
+                if (!breakdown) return `${project}: 0 tasks`;
+                return `${project} - Completed: ${breakdown.completed}, Pending: ${breakdown.pending}, Planned: ${breakdown.planned}, Blockers: ${breakdown.blockers}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { size: 13, weight: 'bold' } }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Tasks',
+              font: { size: 14, weight: 'bold' }
+            },
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { stepSize: 1 }
+          }
+        },
+        animation: { duration: 1000, easing: 'easeOutQuart' }
+      }
+    });
+  </script>
+
 </body>
 </html>
+
+
+
+

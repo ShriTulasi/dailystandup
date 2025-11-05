@@ -1,4 +1,7 @@
-<!-- templates/lead_dashboard.html -->
+
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,25 +45,50 @@
       font-weight: bold;
       color: #0d6efd !important;
     }
+
+
+  
+
+.sidebar-logo img {
+  width: 140px;          /* increased size */
+  height: 140px;         /* keep square for circular shape */
+  object-fit: cover;     
+  border-radius: 50%;    
+  display: block;
+  margin: 0 auto;        
+}
+
+
   </style>
 </head>
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
+   
+   
     <h4 class="text-center text-white">Lead Panel</h4>
+   <!-- <img src="{% static 'gfg_logo.jpg' %}" alt="Logo" width="25%" style="border-radius: 100%; background-color: black;align-items: center;"> -->
+   
     <hr class="bg-light">
-    
+   <div class="sidebar-logo text-center  mx-5">
+  <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
+</div>
+
+
+<div >
+
     <a href="{% url 'add_project' %}">➕ Add Project</a>
     <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
     <a href="{% url 'assign_project' %}">📂 Assign Project</a>
     <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
     <a href="{% url 'approval_list' %}">📂 Approve List</a>
-    <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'lead_daily_task' %}">➕ Update Task</a>
-    <a href="{% url 'lead_task_history' %}">📜 Task History</a>
+    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
+    <a href="{% url 'submit_daily_task' %}">📝 Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📊 Task History</a>
     <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
-   🚪 Logout</a>
+   🚪 Logout</a></div>
+   
   </div>
 
   <!-- Page Content -->
@@ -89,12 +117,12 @@
                 </div>
 
                 <div>
-                  {% if meeting.is_canceled %}
+                  {% if meeting.is_cancel %}
                     <h6 class="mb-1 text-danger">
                       <i class="bi bi-x-circle me-1"></i> Meeting Canceled
                     </h6>
                     <div class="small text-muted">
-                      <strong>Reason:</strong> {{ meeting.cancel_reason }}
+                      <strong>Reason:</strong> {{ meeting.reason }}
                     </div>
                   {% else %}
                     <div class="d-flex align-items-center gap-2">
@@ -129,7 +157,7 @@
               </div>
 
               <!-- Right: actions -->
-              {% if not meeting.is_canceled %}
+              {% if not meeting.is_cancel %}
               <div class="text-nowrap d-flex align-items-center gap-2">
                 {% if meeting.link %}
                   <a href="{{ meeting.link }}" target="_blank" class="btn btn-sm btn-primary">
@@ -183,6 +211,21 @@
         </div>
       {% endif %}
     </div>
+    {% if missed_employees %}
+  <div class="alert alert-danger mt-4 shadow-sm" role="alert">
+    <h5 class="text-danger">
+      ⚠️ Missed  daily standup updates (After {{ cutoff }})
+    </h5>
+    <ul class="list-group mt-2">
+      {% for emp in missed_employees %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ emp.username|capfirst }}</span>
+          <span class="badge bg-danger">Not Submitted</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

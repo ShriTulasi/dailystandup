@@ -112,9 +112,8 @@
     <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
     <a href="{% url 'approval_list' %}">📂 Approve List</a>
     <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'lead_daily_task' %}">➕ Update Task</a>
-    <!-- <a href="{% url 'employee_task_history' %}">📜 Task History</a> -->
-     <a href="{% url 'lead_task_history' %}">📜 Task History</a>
+    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📜 Task History</a>
     <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
    🚪 Logout</a>
   </div>
@@ -132,7 +131,11 @@
       {% csrf_token %}
       <div id="projects-container">
         <div class="project-block" id="project-block-1">
-          <div class="project-header">Project 1</div>
+           <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="project-header">What you did yesterday</div>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject(this)">➕ Add Another Project</button>
+          </div>
+        
           <div class="row mb-3">
             <div class="col-md-6">
               <label>Select Project</label>
@@ -147,7 +150,9 @@
           <div id="task-container-1">
             <div class="task-row">
               <input type="text" name="tasks_project_1[]" class="form-control" placeholder="Task description" required>
-              <input type="time" name="time_taken_1[]" class="form-control" placeholder="Time taken" required>
+              <!-- <input type="time" name="time_taken_1[]" class="form-control" placeholder="Time taken" required> -->
+               <input type="time" name="time_taken_1[]" class="form-control" value="01:00" required>
+
               <select name="status_1[]" class="form-select" required>
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
@@ -160,11 +165,60 @@
             </div>
           </div>
 
-          <div class="mt-3">
-            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject()">➕ Add Another Project</button>
-          </div>
-        </div>
+
+          
+
+          
       </div>
+
+      <div class="project-block" id="project-block-today">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="project-header">What you will do today</div>
+    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProject(this)">➕ Add Another Project</button>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label>Select Project</label>
+      <select name="today_project_id" class="form-select" required>
+        {% for p in form.fields.project.queryset %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <label>Task Description</label>
+      <textarea name="today_task_description" class="form-control" placeholder="Describe what you will do today..." rows="3" required></textarea>
+    </div>
+  </div>
+</div>
+<div class="project-block" id="project-block-blockers">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="project-header text-danger">Blockers (Optional)</div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label>Related Project (Optional)</label>
+      <select name="blocker_project_id" class="form-select">
+        <option value="">-- Select Project (optional) --</option>
+        {% for p in form.fields.project.queryset %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <label>Mention your blockers (if any)</label>
+      <textarea name="blockers_description" class="form-control" placeholder="Describe any blockers or issues you’re facing..." rows="3"></textarea>
+    </div>
+  </div>
+</div>
 
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -172,7 +226,13 @@
       </div>
     </form>
   </div>
+
+
+
+  
 </div>
+
+
 
 <script>
   const today = "{{ today|date:'Y-m-d' }}";   // send today's date from Django to JS
@@ -186,7 +246,7 @@
     newRow.classList.add("task-row");
     newRow.innerHTML = `
       <input type="text" name="tasks_project_${index}[]" class="form-control" placeholder="Task description" required>
-      <input type="time" name="time_taken_${index}[]" class="form-control" required>
+      <input type="time" name="time_taken_${index}[]" class="form-control" value="01:00" required>
       <select name="status_${index}[]" class="form-select" required>
         <option value="pending">Pending</option>
         <option value="completed">Completed</option>
@@ -219,7 +279,13 @@
     projectBlock.classList.add("project-block");
     projectBlock.id = `project-block-${projectCount}`;
     projectBlock.innerHTML = `
-      <div class="project-header">Project ${projectCount}</div>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="project-header mb-0">Project ${projectCount}</div>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeProject(this)" title="Delete Project">
+          🗑️
+        </button>
+      </div>
+
       <div class="row mb-3">
         <div class="col-md-6">
           <label>Select Project</label>
@@ -228,15 +294,16 @@
           </select>
         </div>
       </div>
+
       <div id="task-container-${projectCount}">
         <div class="task-row">
           <input type="text" name="tasks_project_${projectCount}[]" class="form-control" placeholder="Task description" required>
-          <input type="time" name="time_taken_${projectCount}[]" class="form-control" required>
+          <input type="time" name="time_taken_${projectCount}[]" class="form-control" value="01:00" required>
+          
           <select name="status_${projectCount}[]" class="form-select" required>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
           </select>
-          <!-- No date field for dynamically added tasks -->
           <div class="task-buttons">
             <button type="button" class="btn btn-success btn-sm" onclick="addTask(this)">+</button>
             <button type="button" class="btn btn-danger btn-sm" onclick="removeTask(this)">-</button>
@@ -246,7 +313,19 @@
     `;
     projectsContainer.appendChild(projectBlock);
   }
+
+  
+
+
+
+    function removeProject(button) {
+    if (confirm("Are you sure you want to cancel  this project?")) {
+      const projectBlock = button.closest(".project-block");
+      projectBlock.remove();
+    }
+  }
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

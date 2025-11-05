@@ -1,265 +1,239 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Schedule Meeting - Lead Panel</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-    }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
+
+  {% load static %}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Schedule Meeting - Lead Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #343a40;
+        padding-top: 20px;
+      }
+      .sidebar a {
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #ddd;
+        display: block;
+        border-left: 3px solid transparent;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+        color: #fff;
+        border-left: 3px solid #0d6efd;
+      }
+      .content {
+        margin-left: 260px;
+        padding: 30px;
+      }
+      .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+      .form-label {
+        font-weight: 500;
+      }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #343a40;
+        padding-top: 20px;
+      }
+      .sidebar a {
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #ddd;
+        display: block;
+        border-left: 3px solid transparent;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+        color: #fff;
+        border-left: 3px solid #0d6efd;
+      }
+      .content {
+        margin-left: 260px;
+        padding: 30px;
+      }
+      .navbar-brand {
+        font-weight: bold;
+        color: #0d6efd !important;
+      }
+      .sidebar-logo img {
+    width: 140px;          /* increased size */
+    height: 140px;         /* keep square for circular shape */
+    object-fit: cover;     
+    border-radius: 50%;    
+    display: block;
+    margin: 0 auto;        
+  }
+    /* Make dropdown look cleaner */
+  .select2-container .select2-selection--multiple {
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 6px;
+    min-height: 48px;
+  }
+
+  /* Checkbox style inside dropdown */
+  .select2-results__option[aria-selected=true]::before {
+    content: "☑ ";
+  }
+  .select2-results__option[aria-selected=false]::before {
+    content: "⬜ ";
+  }
+
+  .select2-results__option::before {
+    margin-right: 8px;
+  }
+  .content {
       margin-left: 260px;
       padding: 30px;
     }
-    .card {
+
+    .navbar {
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      background-color: #fff;
+      padding: 30px;
+    }
+
     .form-label {
       font-weight: 500;
+      color: #333;
     }
-  </style>
-</head>
-<body>
-  <div class="sidebar">
-    <h4 class="text-center text-white mb-3">Lead Panel</h4>
-    <hr class="bg-light">
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="{% url 'team_lead_task_view' %}">📜 Task Updates</a>
-    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
-    <a href="{% url 'logout_view' %}">🚪 Logout</a>
-  </div>
 
-  <div class="content">
-    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-      <div class="container w-100 d-flex justify-content-between align-items-center">
-        <a class="navbar-brand">Lead Dashboard</a>
-        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
-      </div>
-    </nav>
-
-    <div class="container col-md-8">
-      <div class="card p-4">
-        <h4 class="mb-4 text-primary fw-bold">Schedule New Meeting</h4>
-        <form method="post">
-          {% csrf_token %}
-
-          <div class="mb-3">
-            <label class="form-label">Select Employees</label>
-            <div class="row">
-              {% for user in employees %}
-              <div class="col-md-6">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="participants" value="{{ user.id }}" id="user_{{ user.id }}">
-                  <label class="form-check-label" for="user_{{ user.id }}">
-                    {{ user.username }}
-                  </label>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-            <small class="text-muted">Select one or more employees to invite.</small>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">About Meeting</label>
-            <textarea name="about" class="form-control" rows="3" required></textarea>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Meeting Link</label>
-            <input type="url" name="link" class="form-control" placeholder="Paste meeting link (Zoom, Teams...)" required>
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Date</label>
-              <input type="date" name="meeting_date" class="form-control" value="{{ today }}" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Time</label>
-              <input type="time" name="meeting_time" class="form-control" required>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="submit" class="btn btn-primary">Schedule Meeting</button>
-            <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'team_lead_task_view' %}'">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> -->
-
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Schedule Meeting - Lead Panel</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
+    .form-control,
+    .form-select {
+      border-radius: 10px;
+      padding: 10px;
     }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
-    .card {
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .form-label {
-      font-weight: 500;
-    }
-     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-    }
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #343a40;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      padding: 12px 20px;
-      text-decoration: none;
-      font-size: 16px;
-      color: #ddd;
-      display: block;
-      border-left: 3px solid transparent;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-      color: #fff;
-      border-left: 3px solid #0d6efd;
-    }
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
-    .navbar-brand {
-      font-weight: bold;
-      color: #0d6efd !important;
-    }
-  </style>
-</head>
-<body>
-  <!-- <div class="sidebar">
-    <h4 class="text-center text-white mb-3">Lead Panel</h4>
-    <hr class="bg-light">
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="{% url 'team_lead_task_view' %}">📜 Task Updates</a>
-    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
-    <a href="{% url 'logout_view' %}">🚪 Logout</a>
-  </div> -->
 
+    /* Select2 styling */
+    .select2-container .select2-selection--multiple {
+      border: 1px solid #ced4da;
+      border-radius: 10px;
+      min-height: 48px;
+      padding: 6px;
+      box-shadow: none;
+    }
 
+    .select2-selection__choice {
+      background-color: #0d6efd !important;
+      border: none !important;
+      color: white !important;
+      border-radius: 8px !important;
+      padding: 3px 10px !important;
+    }
 
-  <div class="sidebar">
-    <h4 class="text-center text-white">Lead Panel</h4>
-    <hr class="bg-light">
+    .select2-results__option[aria-selected=true]::before {
+      content: "☑ ";
+    }
+    .select2-results__option[aria-selected=false]::before {
+      content: "⬜ ";
+    }
+    .select2-results__option::before {
+      margin-right: 8px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+
+    .btn-outline-secondary {
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .content {
+        margin-left: 0;
+      }
+    }
+      
+    </style>
+  </head>
+  <body>
     
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <!-- <a href="{% url 'add_profile' %}">👤 Add Profile</a> -->
-     <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
-    <a href="{% url 'approval_list' %}">📂 Approve List</a>
-    <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-    <!-- <a href="{% url 'employee_task_history' %}">📜 Task History</a> -->
-     <a href="{% url 'lead_task_history' %}">📜 Task History</a>
-    <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
-   🚪 Logout</a>
+
+
+    <div class="sidebar">
+      <h4 class="text-center text-white">Lead Panel</h4>
+      <hr class="bg-light">
+      <div class="sidebar-logo text-center  mx-5">
+    <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
   </div>
 
-  <div class="content">
-    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
-      <div class="container w-100 d-flex justify-content-between align-items-center">
-        <a class="navbar-brand">Lead Dashboard</a>
-        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
-      </div>
-    </nav>
+      <a href="{% url 'add_project' %}">➕ Add Project</a>
+      <!-- <a href="{% url 'add_profile' %}">👤 Add Profile</a> -->
+      <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+      <a href="{% url 'assign_project' %}">📂 Assign Project</a>
+      <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
+      <a href="{% url 'approval_list' %}">📂 Approve List</a>
+      <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
+      <a href="{% url 'submit_daily_task' %}">📝 Update Task</a>
+      <a href="{% url 'employee_task_history' %}">📜 Task History</a>
+      <!-- <a href="{% url 'lead_task_history' %}">📊 Task History</a> -->
+      <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
+    🚪 Logout</a>
+    </div>
+
+    <div class="content">
+      <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
+        <div class="container w-100 d-flex justify-content-between align-items-center">
+          <a class="navbar-brand">Lead Dashboard</a>
+          <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
+        </div>
+      </nav>
+
+    
 
     <div class="container col-md-8">
-      <div class="card p-4">
-        <h4 class="mb-4 text-primary fw-bold">Schedule New Meeting</h4>
+      <div class="card">
+        <h4 class="mb-4 fw-bold text-primary">📅 Schedule New Meeting</h4>
+
         <form method="post">
           {% csrf_token %}
 
-          <!-- Participants checkboxes -->
+          <!-- Participants -->
           <div class="mb-3">
             <label class="form-label">Select Employees</label>
             {{ form.participants }}
-            <small class="text-muted">Select one or more employees to invite.</small>
+            <!-- <small class="text-muted">Choose one or more employees to invite.</small> -->
           </div>
-
-         
 
           <!-- About meeting -->
           <div class="mb-3">
@@ -273,7 +247,7 @@
             {{ form.link }}
           </div>
 
-          <!-- Date and time -->
+          <!-- Date and Time -->
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Date</label>
@@ -287,7 +261,7 @@
 
           <!-- Buttons -->
           <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="submit" class="btn btn-primary">Schedule Meeting</button>
+            <button type="submit" class="btn btn-primary">💾 Schedule Meeting</button>
             <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'team_lead_task_view' %}'">Cancel</button>
           </div>
         </form>
@@ -295,7 +269,25 @@
     </div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery + Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#id_participants').select2({
+      placeholder: "Select Employees",
+      width: '100%',
+      closeOnSelect: false,
+      allowClear: true
+    });
+  });
+</script>
+
+  </body>
+  </html>
 
