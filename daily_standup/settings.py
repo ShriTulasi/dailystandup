@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-i_j69^9dhvc68t142j3n!)np9evc2qk5m-q0qm(+og2csrr4!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOW_ALL_ORIGINS = True
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['192.168.0.116']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'standup',
     'rest_framework',
     'rest_framework.authtoken',
+    "corsheaders",
     
 
 
@@ -58,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'daily_standup.urls'
@@ -83,12 +86,26 @@ WSGI_APPLICATION = 'daily_standup.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dsm',       # the database name you created in pgAdmin
+        'USER': 'postgres',       # your PostgreSQL username
+        'PASSWORD': 'shri@22',  # your PostgreSQL password
+        'HOST': 'localhost',          # usually localhost if running locally
+        'PORT': '5432',               # default PostgreSQL port
     }
 }
+
+
+
+FIREBASE_PROJECT_ID = "dsm-project-7087e"
 
 
 # Password validation
@@ -115,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -136,5 +153,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',  # use token
         # 'rest_framework.authentication.SessionAuthentication',  # comment out
+
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
     ),
 }
