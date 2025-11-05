@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weekly Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8fafc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    h4 {
+      font-weight: 600;
+    }
+    table {
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    }
+    thead {
+      background: linear-gradient(90deg, #007bff, #00aaff);
+      color: white;
+    }
+    th, td {
+      vertical-align: middle !important;
+    }
+    .btn-success {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4>📅 Weekly Report ({{ start_date }} → {{ end_date }})</h4>
+      <a href="{% url 'download_weekly_report_pdf' %}" class="btn btn-success">
+        ⬇️ Download PDF
+      </a>
+    </div>
+
+    {% if employee_data %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Date</th>
+              <th>What You Did Yesterday</th>
+              <th>What You Will Do Today</th>
+              <th>Blockers</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for employee, tasks in employee_data.items %}
+              {% regroup tasks by task_date as date_groups %}
+              {% for group in date_groups %}
+                <tr>
+                  <td>{{ employee.get_full_name|default:employee.username }}</td>
+                  <td>{{ group.grouper }}</td>
+                  <td>
+                    {% for task in group.list %}
+                      {% if task.is_yesterday %}
+                        <div>• {{ task.project.name }} — {{ task.task_description }} ({{ task.status }})</div>
+                      {% endif %}
+                    {% empty %}
+                      —
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for task in group.list %}
+                      {% if task.is_today %}
+                        <div>• {{ task.project.name }} — {{ task.task_description }} ({{ task.status }})</div>
+                      {% endif %}
+                    {% empty %}
+                      —
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for task in group.list %}
+                      {% if task.is_blocker %}
+                        <div>• {{ task.project.name }} — {{ task.task_description }}</div>
+                      {% endif %}
+                    {% empty %}
+                      —
+                    {% endfor %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-info text-center">
+        No employees have updated their sheets this week.
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
