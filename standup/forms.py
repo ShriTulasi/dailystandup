@@ -2,21 +2,12 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User,Project,EmployeeProject,Profile,ProjectAssignment,EmpProfile,DailyUpdates,Meeting
 
-# class RegisterForm(UserCreationForm):
-#     email = forms.EmailField(required=True)
-    
+from .models import ProjectAssignment, Project, User  # Employee = your employee model
 
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email', 'password1', 'password2','phonenumber','dob','address','designation']
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.is_active = False   # cannot login until approved
-#         user.is_pending = True   # show in lead dashboard
-#         if commit:
-#             user.save()
-#         return user
-
+from .models import EmpProfile
+from django import forms
+from .models import Meeting
+from django.contrib.auth import get_user_model
 
 
 class RegisterForm(UserCreationForm):
@@ -31,22 +22,12 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']  # only User fields
+        fields = ['username', 'email', 'password1', 'password2']  
 
 
 
 
-    # def clean_email(self):
-    #     email = self.cleaned_data.get("email")
-    #     if User.objects.filter(email=email).exists():
-    #         raise forms.ValidationError("This email is already registered.")
-    #     return email
-
-    # def clean_phone(self):
-    #     phone = self.cleaned_data.get("phone")
-    #     if EmpProfile.objects.filter(phone=phone).exists():
-    #         raise forms.ValidationError("This phone number is already registered.")
-    #     return phone
+   
     def clean(self):
         cleaned_data = super().clean()
 
@@ -92,15 +73,6 @@ class ApproveUserForm(forms.ModelForm):
 
 
     
-
-
-
-# class ProjectForm(forms.ModelForm):
-#     class Meta:
-#         model = Project
-#         fields = ['name', 'description']
-
-
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
@@ -128,50 +100,6 @@ class AssignEmployeeForm(forms.Form):
         
         self.fields['employee'].queryset = User.objects.filter(role='employee')
 
-
-
-# class profileform(forms.ModelForm):
-#     class Meta:
-#         model = Profile
-#         fields = ['phone', 'field', 'designation']
-#         widgets = {
-#             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone'}),
-#             'field': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter field'}),
-#             'designation': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter designation'}),
-            
-#         }
-
-
-
-
-# class profileform(forms.ModelForm):
-#     username = forms.CharField(
-#         max_length=30, required=True, 
-#         widget=forms.TextInput(attrs={'class': 'form-control'})
-#     )
-    
-#     email = forms.EmailField(
-#         required=True, 
-#         widget=forms.EmailInput(attrs={'class': 'form-control'})
-#     )
-
-#     class Meta:
-#         model = Profile
-#         fields = ['username', 'email', 'phone', 'field', 'designation']
-#         widgets = {
-#             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone'}),
-#             'field': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter field'}),
-#             'designation': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter designation'}),
-#         }
-
-#     def __init__(self, *args, **kwargs):
-#         user = kwargs.pop('user', None)
-#         super().__init__(*args, **kwargs)
-#         if user:
-#             # self.fields['first_name'].initial = user.first_name
-#             # self.fields['last_name'].initial = user.last_name
-#             self.fields['email'].initial = user.email
-#             self.fields['username'].initial = user.username
 
 
 class ProfileForm(forms.ModelForm):
@@ -210,20 +138,6 @@ class ProfileForm(forms.ModelForm):
                 self.fields['designation'].initial = user.profile.designation
 
 
-# class ProjectAssignmentForm(forms.ModelForm):
-#     class Meta:
-#         model = ProjectAssignment
-#         fields = ['project', 'employees']
-
-#     project = forms.ModelChoiceField(queryset=Project.objects.all(), empty_label="Select Project")
-#     employees = forms.ModelMultipleChoiceField(
-#         queryset=EmployeeProject.objects.all(),
-#         widget=forms.CheckboxSelectMultiple  # or use SelectMultiple for dropdown
-#     )
-
-
-from django import forms
-from .models import ProjectAssignment, Project, User  # Employee = your employee model
 
 class ProjectAssignmentForm(forms.ModelForm):
     project = forms.ModelChoiceField(
@@ -243,13 +157,6 @@ class ProjectAssignmentForm(forms.ModelForm):
 
 
 
-
-
-
-
-
-from django import forms
-from .models import EmpProfile
 
 class EmpProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=150)
@@ -284,13 +191,6 @@ class EmpProfileForm(forms.ModelForm):
 
 
 
-# class DailyTaskForm(forms.ModelForm):
-#     class Meta:
-#         model = DailyUpdates
-#         fields = ['project', 'task_description']  # task_date is automatic
-#         widgets = {
-#             'task_description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Describe your task'}),
-#         }
 
 
 
@@ -307,71 +207,32 @@ class DailyTaskForm(forms.ModelForm):
 
 
 
-
-# class MeetingForm(forms.ModelForm):
-#     class Meta:
-#         model = Meeting
-#         fields = ['participants', 'about', 'meeting_time', 'meeting_date', 'link']
-#         widgets = {
-#             'participants': forms.SelectMultiple(attrs={'class': 'form-select', 'size': 5}),
-#             'about': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-#             'meeting_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-#             'meeting_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-#             'link': forms.URLInput(attrs={'class': 'form-control'}),
-#         }
-
-
-
-
-
-# from django import forms
-# from .models import Meeting
-# from django.contrib.auth.models import User
-
-# class MeetingForm(forms.ModelForm):
-#     class Meta:
-#         model = Meeting
-#         fields = ['participants', 'about', 'meeting_time', 'meeting_date', 'link']
-#         widgets = {
-#             'participants': forms.CheckboxSelectMultiple(),
-#             'about': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-#             'meeting_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-#             'meeting_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-#             'link': forms.URLInput(attrs={'class': 'form-control'}),
-#         }
-
-#     def __init__(self, *args, **kwargs):
-#         super(MeetingForm, self).__init__(*args, **kwargs)
-#         # Filter only employees (assuming 'employee' is a role in your User model)
-#         self.fields['participants'].queryset = User.objects.filter(role='employee')
-
-
-
-from django import forms
-from .models import Meeting
-from django.contrib.auth import get_user_model
-
-User = get_user_model()  # this points to your custom standup.User
+User = get_user_model()  
 
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
         fields = ['participants', 'about', 'meeting_time', 'meeting_date', 'link']
         widgets = {
-            'participants': forms.CheckboxSelectMultiple(),
+            # 'participants': forms.CheckboxSelectMultiple(),
+            'participants': forms.SelectMultiple(attrs={'class': 'form-select', 'id': 'id_participants'}),
+
             'about': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'meeting_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
             'meeting_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'link': forms.URLInput(attrs={'class': 'form-control'}),
         }
 
+
+
+
+
     def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop('user', None)  # ✅ get logged-in user passed from view
         super(MeetingForm, self).__init__(*args, **kwargs)
-        # Filter only employees (assuming 'employee' is a role in your User model)
-        self.fields['participants'].queryset = User.objects.filter(role='employee',is_approved =True)
 
-
-
-
-
-
+        # ✅ Show all approved users except the logged-in one
+        if current_user:
+            self.fields['participants'].queryset = User.objects.filter(is_approved=True).exclude(id=current_user.id).order_by('username')
+        else:
+            self.fields['participants'].queryset = User.objects.filter(is_approved=True).order_by('username')

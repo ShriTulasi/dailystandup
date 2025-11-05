@@ -4,15 +4,22 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
+
+from django.conf import settings
+
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('employee', 'Employee'),
         
         ('lead', 'Tech Lead'),
+        ('ceo' ,'CEO'),
+        ('management' ,'Management')
+        
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, blank=True,null=True)
     is_approved = models.BooleanField(default=False)
     is_pending = models.BooleanField(default=True)
+
 
 
 
@@ -62,23 +69,6 @@ class ProjectAssignment(models.Model):
     assigned_at = models.DateTimeField(auto_now_add=True)
 
 
-# class EmpProfile(models.Model):
-#     users = models.ForeignKey(User,on_delete=models.CASCADE,related_name="emp")
-#     phone = models.CharField(max_length=15)
-#     address = models.TextField()
-#     profile = models.FileField()
-#     dob = models.DateField(blank=True, null=True)
-#     designation = models . CharField(max_length=100)
-
-
-
-#     def __str__(self):
-#         return self.user.username
-
-
-
-        
-
 
 
 class EmpProfile(models.Model):
@@ -105,46 +95,14 @@ class DailyUpdates(models.Model):
     choices=[('completed','Completed'),('pending','Pending')],
     default='pending'
     )
-
-
-
+    created_at = models.DateTimeField(auto_now_add=True, null=True ,blank=True)
+    is_blocker = models.BooleanField(default=False) 
+    is_today = models.BooleanField(default=False)
+    is_yesterday = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.user.username}-{self.project.name}"
 
 
-
-
-
-# class Meeting(models.Model):
-#     contact = models.ForeignKey(User,on_delete=models.CASCADE)
-#     about = models.TextField()
-#     meeting_time = models.DurationField(null=True,blank=True)
-#     meeting_date = models.DateField(default=timezone.localdate)
-#     link = models.CharField()
-
-
-#     def __str__(self):
-#         return f"{self.meeting_date}"
-    
-
-
-# class Meeting(models.Model):
-#     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hosted_meetings')  # the lead
-#     participants = models.ManyToManyField(User, related_name='meetings')  # employees invited
-#     about = models.TextField()
-#     meeting_time = models.DurationField(null=True, blank=True)
-#     meeting_date = models.DateField(default=timezone.localdate)
-#     link = models.URLField(max_length=500, blank=True)
-
-#     def __str__(self):
-#         return f"{self.host.username} - {self.meeting_date}"
-
-
-
-
-from django.db import models
-from django.conf import settings
-from django.utils import timezone
 
 class Meeting(models.Model):
     host = models.ForeignKey(
@@ -168,4 +126,22 @@ class Meeting(models.Model):
 
 
 
+class FCMToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.TextField(unique=True)
+    device_name = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)  # track last update
 
+    def __str__(self):
+        return f"{self.user.username} - {self.device_name or 'Device'}"
+
+
+class FCMNotification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
