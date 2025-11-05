@@ -1,3 +1,6 @@
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,17 +49,16 @@
 
     /* Main content */
     .main-content {
-      margin-left: 260px;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      margin-left: 250px; /* same as sidebar width */
+      padding: 20px 40px;
       min-height: 100vh;
+      background-color: #f4f6f9;
     }
 
     /* Card */
     .card {
-      width: 450px;
+      max-width: 500px;
+      margin: 20px auto; /* center horizontally */
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 30px;
@@ -105,45 +107,56 @@
     .form-check-label {
       margin-left: 5px;
     }
+     .navbar-brand {
+      font-weight: bold;
+      color: #0d6efd !important;
+    }
+    
+.sidebar-logo img {
+  width: 140px;          /* increased size */
+  height: 140px;         /* keep square for circular shape */
+  object-fit: cover;     
+  border-radius: 50%;    
+  display: block;
+  margin: 0 auto;        
+}
   </style>
 </head>
 <body>
 
   <!-- Sidebar -->
-  <!-- <div class="sidebar">
-    <h4>Lead Panel</h4>
-    <hr class="bg-light">
-    
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
-    <a href="{% url 'approval_list' %}">📂 Approve List</a>
-
-    <a href="{% url 'logout_view' %}">🚪 Logout</a>
-  </div> -->
-
-
-
   <div class="sidebar">
     <h4 class="text-center text-white">Lead Panel</h4>
     <hr class="bg-light">
+     <div class="sidebar-logo text-center  mx-5">
+  <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
+</div>
+
     
     <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <!-- <a href="{% url 'add_profile' %}">👤 Add Profile</a> -->
-     <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
+    <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
     <a href="{% url 'assign_project' %}">📂 Assign Project</a>
     <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
     <a href="{% url 'approval_list' %}">📂 Approve List</a>
-    <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-    <a href="{% url 'lead_task_history' %}">📜 Task History</a>
+    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
+    <a href="{% url 'submit_daily_task' %}">📝 Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📊 Task History</a>
     <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
-   🚪 Logout</a>
+      🚪 Logout
+    </a>
   </div>
 
   <!-- Main Content -->
   <div class="main-content">
+    <!-- Navbar -->
+    <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
+      <div class="container-fluid d-flex justify-content-between">
+        <span class="navbar-brand mb-0 h5">Tech Lead Dashboard</span>
+        <span class="fw-bold fs-5">Welcome, {{ request.user.username }}</span>
+      </div>
+    </nav>
+
+    <!-- Assign Project Form -->
     <div class="card">
       <h2>Assign Project</h2>
       <form method="POST">
@@ -175,6 +188,3 @@
 
 </body>
 </html>
-
-
-

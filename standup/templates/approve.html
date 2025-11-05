@@ -1,3 +1,5 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,44 +81,79 @@
       font-weight: bold;
       color: #0d6efd !important;
     }
+    .sidebar-logo img {
+  width: 140px;          /* increased size */
+  height: 140px;         /* keep square for circular shape */
+  object-fit: cover;     
+  border-radius: 50%;    
+  display: block;
+  margin: 0 auto;        
+}
+  #roleModal .modal-content {
+    border-radius: 12px;
+  }
+  
+  #roleModal .modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  
+  #roleModal .modal-body {
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  #roleModal .modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  
+  #roleModal .form-select {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+  }
+  
+  #roleModal .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+  }
+  
+  #roleModal .alert-light {
+    background-color: #f8f9fa;
+  }
+  
+  #roleModal .badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+  }
+
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <!-- <div class="sidebar">
-    <h4 class="text-center text-white">Lead Panel</h4>
-    <hr class="bg-light">
-    <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <a href="{% url 'add_profile' %}">👤 Add Profile</a>
-    <a href="{% url 'assign_project' %}">📂 Assign Project</a>
-    <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
-    <a href="{% url 'approval_list' %}">📂 Approve List</a>
 
-    <a href="{% url 'logout_view' %}">🚪 Logout</a>
-    
-    
-  </div> -->
 
 
   <div class="sidebar">
     <h4 class="text-center text-white">Lead Panel</h4>
     <hr class="bg-light">
+     <div class="sidebar-logo text-center  mx-5">
+  <img src="{% static 'gfg.png' %}" alt="Logo" class="img-fluid rounded-circle">
+</div>
+
+
+
     
     <a href="{% url 'add_project' %}">➕ Add Project</a>
-    <!-- <a href="{% url 'add_profile' %}">👤 Add Profile</a> -->
+   
      <a href="{% url 'add_emp_profile' %}">👤 Add Profile</a>
     <a href="{% url 'assign_project' %}">📂 Assign Project</a>
     <a href="{% url 'team_lead_task_view' %}">📜 Tasks Updates</a>
     <a href="{% url 'approval_list' %}">📂 Approve List</a>
-    <a href="{% url 'schedule_meeting' %}">📂 Schedule Meeting</a>
-    <a href="{% url 'submit_daily_task' %}">➕ Update Task</a>
-    <a href="{% url 'employee_task_history' %}">📜 Task History</a>
+    <a href="{% url 'schedule_meeting' %}">📅 Schedule Meeting</a>
+    <a href="{% url 'submit_daily_task' %}">📝 Update Task</a>
+    <a href="{% url 'employee_task_history' %}">📊 Task History</a>
     <a href="{% url 'logout_view' %}" onclick="return confirm('Are you sure you want to logout?');">
    🚪 Logout</a>
   </div>
 
-  <!-- Page Content -->
   <div class="content">
 
       <nav class="navbar navbar-light bg-white shadow-sm mb-4 p-3 rounded">
@@ -139,7 +176,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Pending Users -->
+       
           {% for user in pending_users %}
           <tr>
             <td>{{ user.username }}</td>
@@ -150,33 +187,53 @@
                 <select name="role" class="form-select form-select-sm" required>
                   <option value="employee" {% if user.role == 'employee' %}selected{% endif %}>Employee</option>
                   <option value="lead" {% if user.role == 'lead' %}selected{% endif %}>Tech Lead</option>
+                  <option value="ceo" {% if user.role == 'ceo' %}selected{% endif %}>CEO</option>
+                  <option value="management" {% if user.role == 'management' %}selected{% endif %}>Management</option>
+
+
                 </select>
             </td>
             <td class="status-pending">Pending</td>
             <td>
-                <button type="submit" class="btn btn-success btn-sm mb-1">Approve</button>
+                <!-- <button type="submit" class="btn btn-success btn-sm mb-1"onclick="return confirm('Are you sure you want approve  {{user.username}}? as{{user.role}}');">Approve</button> -->
+                 <button type="submit" class="btn btn-success btn-sm mb-1"
+    onclick="return confirm('Are you sure you want to approve {{ user.username }} as ' + this.form.role.options[this.form.role.selectedIndex].text + '?');">
+    Approve
+</button>
+
                 </form>
-                <a href="{% url 'reject_user' user.id %}" class="btn btn-danger btn-sm">Reject</a>
+                <a href="{% url 'reject_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject?');">Reject</a>
             </td>
           </tr>
           {% endfor %}
 
-          <!-- Approved Users -->
+         
           {% for user in approved_users %}
           <tr>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
             <td class="status-approved">Approved</td>
-            <!-- <td><a href="{% url 'reject_user' user.id %}" class="btn btn-danger btn-sm">Reject</a><i class="fas fa-user-slash" style="color:black;"></i></td> -->
-                                <td class="text-center">
-    <a href="{% url 'reject_user' user.id %}" 
-       class="btn btn-white btn-sm rounded-circle" 
-       title="Delete User" 
-       onclick="return confirm('Are you sure you want to delete or block this user? onces user blocked he  they cant access any page'); " style= "color: brown;">
-        <i class="fas fa-trash-alt" style="color:black;"></i>
-    </a>
-</td>
+            
+           
+            <td class="text-center">
+              <button class="btn btn-white btn-sm rounded-circle gap-3" 
+                      title="Change Role"
+                      style="color: brown;"
+                      onclick="openRolePopup('{{ user.username }}', '{{ user.role }}', '{{ user.id }}')">
+                  <i class="fas fa-edit" style="color:red;"></i>
+              </button>
+
+              
+
+                <a href="{% url 'reject_user' user.id %}" 
+                  class="btn btn-white btn-sm rounded-circle" 
+                  title="Delete User" 
+                  onclick="return confirm('Are you sure you want to delete or block this user? onces user blocked he  they cant access any page'); " style= "color: brown;">
+                    <i class="fas fa-trash-alt" style="color:black;"></i>
+                </a>
+
+            </td>
 
 
 
@@ -188,8 +245,112 @@
     {% else %}
       <p>No users found.</p>
     {% endif %}
+    <!-- Role Change Modal -->
+
+    <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="roleModalLabel">
+          <i class="bi bi-person-gear me-2"></i>Change User Role
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <form id="roleForm" method="POST">
+          {% csrf_token %}
+          <div class="alert alert-warning d-flex align-items-center mb-0" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <small>This action will update user permissions immediately.</small>
+          </div><br>
+          
+          <div class="alert alert-light border mb-3">
+            <div class="row g-2">
+              <div class="col-12">
+                <small class="text-muted d-block mb-1">Username</small>
+                <strong id="roleUsername" class="text-dark"></strong>
+              </div>
+              <div class="col-12 mt-2">
+                <small class="text-muted d-block mb-1">Current Role</small>
+                <span id="currentRole" class="badge bg-secondary fs-6"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="newRole" class="form-label fw-semibold">
+              <i class="bi bi-shield-check me-1"></i>Select New Role
+            </label>
+            <select id="newRole" name="role" class="form-select form-select-lg" required>
+              <option value="" disabled selected>Choose a role...</option>
+              <option value="employee" {% if user.role == 'employee' %}selected{% endif %}>
+                👤 Employee
+              </option>
+              <option value="lead" {% if user.role == 'lead' %}selected{% endif %}>
+                🔧 Tech Lead
+              </option>
+              <option value="management" {% if user.role == 'management' %}selected{% endif %}>
+                📊 Management
+              </option>
+              <option value="ceo" {% if user.role == 'ceo' %}selected{% endif %}>
+                💼 CEO
+              </option>
+            </select>
+          </div>
+
+          
+        </form>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary px-4" id="confirmRoleChange">
+          <i class="bi bi-check-circle me-1"></i>Confirm Change
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   </div>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function openRolePopup(username, currentRole, userId) {
+    document.getElementById('roleUsername').textContent = username;
+    document.getElementById('currentRole').textContent = currentRole;
+
+    const modal = new bootstrap.Modal(document.getElementById('roleModal'));
+    modal.show();
+
+    const confirmBtn = document.getElementById('confirmRoleChange');
+    confirmBtn.onclick = function () {
+        const newRole = document.getElementById('newRole').value;
+
+        if (!newRole) {
+            alert("⚠️ Please select a role first.");
+            return;
+        }
+
+        const confirmChange = confirm(`Are you sure you want to change ${username}'s role to ${newRole}?`);
+        if (confirmChange) {
+            // Redirect to your Django view
+            window.location.href = `/change_role/${userId}/${newRole}/`;
+        }
+    };
+}
+</script>
+
 </html>
+
+
+
+
+
+
+
 
