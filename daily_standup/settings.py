@@ -96,8 +96,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'dsm',       # the database name you created in pgAdmin
-        'USER': 'postgres',       # your PostgreSQL username
-        'PASSWORD': 'shri@22',  # your PostgreSQL password
+        'USER': 'xxxxxxxxxxxxxxxxxx',       # your PostgreSQL username
+        'PASSWORD': 'xxxxxxxxxxx',  # your PostgreSQL password
         'HOST': 'localhost',          # usually localhost if running locally
         'PORT': '5432',               # default PostgreSQL port
     }
